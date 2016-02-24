@@ -1,5 +1,5 @@
 # Privacy Aware Location Service Library
-[![API](https://img.shields.io/badge/API-11%2B-green.svg)](https://github.com/florent37/ViewAnimator/tree/master)
+[![API](https://img.shields.io/badge/API-11%2B-green.svg)](https://github.com/bestog/pals-lib/tree/master)
 
 
 GPS is the most common approach to locate a smartphone-user. The GPS location is determined in Android by Google services. Google stores user profiles about their movement. Thus privacy is not protected!
