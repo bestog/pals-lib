@@ -1,9 +1,10 @@
 package com.bestog.pals.provider;
 
 import android.content.Context;
-import android.util.Log;
+import android.location.Location;
 
 import com.bestog.pals.utils.CommonUtils;
+import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,7 +18,6 @@ import java.util.List;
  * Link: http://www.radiocells.org
  *
  * @author bestog
- * @version 1.0
  */
 public class OpenBMapLocation extends LocationProvider {
 
@@ -99,7 +99,7 @@ public class OpenBMapLocation extends LocationProvider {
             // @todo better logging
             e.printStackTrace();
         }
-        return CommonUtils.getRequest(_requestUrl, request.toString(), "POST", "application/json;charset=utf-8");
+        return CommonUtils.httpRequest(_requestUrl, request.toString(), "POST", "application/json;charset=utf-8");
     }
 
     /**
@@ -144,7 +144,7 @@ public class OpenBMapLocation extends LocationProvider {
      * @return String
      */
     @Override
-    public String submitAction() {
+    public String submitAction(Location position) {
         return "";
     }
 

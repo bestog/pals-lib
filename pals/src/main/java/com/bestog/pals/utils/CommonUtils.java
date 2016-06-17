@@ -13,7 +13,7 @@ import java.net.URL;
 
 /**
  * Class: CommonUtils
- * Important features for the library
+ * Important functions for the library
  *
  * @author bestog
  */
@@ -28,7 +28,7 @@ public final class CommonUtils {
      * @param contentType Content-Type
      * @return String
      */
-    public static String getRequest(String url, String body, String httpMethod, String contentType) {
+    public static String httpRequest(String url, String body, String httpMethod, String contentType) {
         InputStream inputStream = null;
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
@@ -73,21 +73,20 @@ public final class CommonUtils {
      * @return string
      */
     private static String streamToString(InputStream stream) {
-        if (stream == null) {
-            return "";
-        }
         StringWriter writer = null;
-        try {
-            InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-            writer = new StringWriter();
-            int n;
-            char[] buffer = new char[1024 * 4];
-            while (-1 != (n = reader.read(buffer))) {
-                writer.write(buffer, 0, n);
+        if (stream != null) {
+            try {
+                InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+                writer = new StringWriter();
+                int n;
+                char[] buffer = new char[1024 * 4];
+                while (-1 != (n = reader.read(buffer))) {
+                    writer.write(buffer, 0, n);
+                }
+            } catch (IOException e) {
+                // @todo better logging
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            // @todo better logging
-            e.printStackTrace();
         }
         return writer != null ? writer.toString() : "";
     }

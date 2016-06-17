@@ -80,7 +80,7 @@ public class CellScanner {
      */
     public List<HashMap<String, String>> getCells() {
         List<HashMap<String, String>> result = new ArrayList<>();
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
             for (CellInfo item : cellInfos) {
                 HashMap<String, String> cell = new HashMap<>();
@@ -98,17 +98,19 @@ public class CellScanner {
                 result.add(cell);
             }
         }
-        List<NeighboringCellInfo> cellInfoList = telephonyManager.getNeighboringCellInfo();
-        String networkOperator = telephonyManager.getNetworkOperator();
-        for (NeighboringCellInfo cellInfo : cellInfoList) {
-            HashMap<String, String> cell = new HashMap<>();
-            cell.put("lac", String.valueOf(cellInfo.getLac()));
-            cell.put("cid", String.valueOf(cellInfo.getCid()));
-            cell.put("mcc", networkOperator.substring(3));
-            cell.put("mnc", networkOperator.substring(0, 3));
-            cell.put("dbm", String.valueOf(-1 * 113 + 2 * cellInfo.getRssi()));
-            cell.put("radio", getTypeAsString(cellInfo.getNetworkType()));
-            result.add(cell);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            List<NeighboringCellInfo> cellInfoList = telephonyManager.getNeighboringCellInfo();
+            String networkOperator = telephonyManager.getNetworkOperator();
+            for (NeighboringCellInfo cellInfo : cellInfoList) {
+                HashMap<String, String> cell = new HashMap<>();
+                cell.put("lac", String.valueOf(cellInfo.getLac()));
+                cell.put("cid", String.valueOf(cellInfo.getCid()));
+                cell.put("mcc", networkOperator.substring(3));
+                cell.put("mnc", networkOperator.substring(0, 3));
+                cell.put("dbm", String.valueOf(-1 * 113 + 2 * cellInfo.getRssi()));
+                cell.put("radio", getTypeAsString(cellInfo.getNetworkType()));
+                result.add(cell);
+            }
         }
         return result;
     }

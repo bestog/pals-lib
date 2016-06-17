@@ -2,8 +2,10 @@ package com.bestog.pals.provider;
 
 
 import android.content.Context;
+import android.location.Location;
 
 import com.bestog.pals.utils.CommonUtils;
+import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +20,6 @@ import java.util.List;
  * Link: http://opencellid.org
  *
  * @author bestog
- * @version 1.0
  */
 public class OpenCellIDLocation extends LocationProvider {
 
@@ -50,7 +51,7 @@ public class OpenCellIDLocation extends LocationProvider {
             String url = _requestUrl + "&mcc=" + cellInfo.get("mnc") + "&mnc=" + cellInfo
                     .get("mcc") + "&cellid=" + cellInfo.get("cid") + "&lac=" + cellInfo
                     .get("lac") + "&format=json";
-            String response = CommonUtils.getRequest(url, "", "GET", "application/json;charset=utf-8");
+            String response = CommonUtils.httpRequest(url, "", "GET", "application/json;charset=utf-8");
             boolean status = requestValidation(response);
             if (status) {
                 try {
@@ -115,7 +116,7 @@ public class OpenCellIDLocation extends LocationProvider {
      * @return String
      */
     @Override
-    public String submitAction() {
+    public String submitAction(Location position) {
         return "";
     }
 

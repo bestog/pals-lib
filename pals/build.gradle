@@ -1,0 +1,40 @@
+apply plugin: 'com.android.library'
+
+ext {
+    bintrayRepo = 'pals'
+    bintrayName = 'pals'
+
+    publishedGroupId = 'com.bestog.pals'
+    libraryName = 'PALS'
+    artifact = 'pals'
+
+    libraryDescription = 'Privacy Aware Location Service Library for Android'
+    libraryVersion = '2.0'
+    libraryVersionCode = 200
+    siteUrl = 'https://github.com/bestog/pals-lib'
+    gitUrl = 'https://github.com/bestog/pals-lib.git'
+    developerId = 'bestog'
+    developerName = 'Sebastian G.'
+    developerEmail = 'android@bestog.de'
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 11
+        targetSdkVersion 23
+        versionCode libraryVersionCode
+        versionName libraryVersion
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+apply from: '/../jcenter-install.gradle'
+apply from: '/../jcenter-bintray.gradle'

@@ -12,7 +12,7 @@ public final class Trilateration {
 
     /**
      * All coordinates are added together and it creates the final result (rudimentarily)
-     * http://www.geomidpoint.com/calculation.html > Point A
+     * http://www.geomidpoint.com/calculation.html = Point A
      *
      * @param resultList locations
      * @return GeoResult

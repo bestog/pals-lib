@@ -1,9 +1,9 @@
 package com.bestog.pals.provider;
 
 import android.content.Context;
+import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import com.bestog.pals.utils.CellScanner;
 import com.bestog.pals.utils.GeoResult;
@@ -16,7 +16,6 @@ import java.util.List;
  * Class: Location Provider - abstract
  *
  * @author bestog
- * @version 1.0
  */
 public abstract class LocationProvider {
 
@@ -53,18 +52,18 @@ public abstract class LocationProvider {
         }
     }
 
-    public boolean submit() {
-        String response = submitAction();
-        return submitValidation(response);
+    public boolean submit(Location position) {
+        String response = submitAction(position);
+        return (submitValidation(response));
     }
 
     protected abstract String requestAction();
 
-    protected abstract void requestResult(String response);
-
     protected abstract boolean requestValidation(String response);
 
-    protected abstract String submitAction();
+    protected abstract void requestResult(String response);
+
+    protected abstract String submitAction(Location position);
 
     protected abstract boolean submitValidation(String response);
 

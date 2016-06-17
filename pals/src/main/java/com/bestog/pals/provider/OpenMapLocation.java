@@ -1,8 +1,10 @@
 package com.bestog.pals.provider;
 
 import android.content.Context;
+import android.location.Location;
 
 import com.bestog.pals.utils.CommonUtils;
+import com.bestog.pals.utils.GeoResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import java.util.Properties;
  * Link: https://openwifi.su
  *
  * @author bestog
- * @version 1.0
  */
 public class OpenMapLocation extends LocationProvider {
 
@@ -45,7 +46,7 @@ public class OpenMapLocation extends LocationProvider {
         for (HashMap<String, String> wifi : wifiSpots) {
             request += wifi.get("key") + "\r\n";
         }
-        return CommonUtils.getRequest(_requestUrl, request, "POST", "application/x-www-form-urlencoded, *.*");
+        return CommonUtils.httpRequest(_requestUrl, request, "POST", "application/x-www-form-urlencoded, *.*");
     }
 
     /**
@@ -86,7 +87,7 @@ public class OpenMapLocation extends LocationProvider {
      * @return String
      */
     @Override
-    public String submitAction() {
+    public String submitAction(Location position) {
         return "";
     }
 

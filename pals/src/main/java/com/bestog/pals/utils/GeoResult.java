@@ -4,7 +4,6 @@ package com.bestog.pals.utils;
  * Class: GeoResult
  *
  * @author bestog
- * @version 1.0
  */
 public class GeoResult {
 

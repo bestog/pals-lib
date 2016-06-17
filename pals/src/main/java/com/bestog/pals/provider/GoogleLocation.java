@@ -1,6 +1,7 @@
 package com.bestog.pals.provider;
 
 import android.content.Context;
+import android.location.Location;
 
 import com.bestog.pals.utils.CommonUtils;
 
@@ -16,7 +17,6 @@ import java.util.List;
  * Link: https://developers.google.com/maps/documentation/geolocation
  *
  * @author bestog
- * @version 1.0
  */
 public class GoogleLocation extends LocationProvider {
 
@@ -104,7 +104,7 @@ public class GoogleLocation extends LocationProvider {
             // @todo better logging
             e.printStackTrace();
         }
-        return CommonUtils.getRequest(_requestUrl, request.toString(), "POST", "application/json;charset=utf-8");
+        return CommonUtils.httpRequest(_requestUrl, request.toString(), "POST", "application/json;charset=utf-8");
     }
 
     /**
@@ -146,7 +146,7 @@ public class GoogleLocation extends LocationProvider {
      * @return String
      */
     @Override
-    public String submitAction() {
+    public String submitAction(Location position) {
         return "";
     }
 
