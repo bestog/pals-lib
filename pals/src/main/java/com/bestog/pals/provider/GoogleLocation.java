@@ -35,6 +35,17 @@ public class GoogleLocation extends LocationProvider {
     }
 
     /**
+     * Constructor with specific token
+     *
+     * @param ctx   Context
+     * @param token String Acces-Token
+     */
+    public GoogleLocation(Context ctx, String token) {
+        super(LocationProvider.PROVIDER_GOOGLE, ctx);
+        _requestUrl = _apiUrl + token;
+    }
+
+    /**
      * Convert a CellInfo in a specific format
      *
      * @param cell HashMap CellInfo

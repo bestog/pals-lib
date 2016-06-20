@@ -23,11 +23,10 @@ import java.util.List;
 public class MozillaLocation extends LocationProvider {
 
     private final String _requestUrl = "https://location.services.mozilla.com/v1/geolocate?key=";
-    private final String _requestToken = "8a677f74-e6e6-43ed-b0db-9926efd0bbe4";
     private final String _requestApiUrl;
     private final String _submitUrl = "https://location.services.mozilla.com/v2/geosubmit?key=";
-    private final String _submitToken = "8a677f74-e6e6-43ed-b0db-9926efd0bbe4";
     private final String _submitApiUrl;
+    private final String _accessToken = "8a677f74-e6e6-43ed-b0db-9926efd0bbe4";
 
     /**
      * Constructor
@@ -36,8 +35,19 @@ public class MozillaLocation extends LocationProvider {
      */
     public MozillaLocation(Context ctx) {
         super(LocationProvider.PROVIDER_MOZILLA, ctx);
-        _requestApiUrl = _requestUrl + _requestToken;
-        _submitApiUrl = _submitUrl + _submitToken;
+        _requestApiUrl = _requestUrl + _accessToken;
+        _submitApiUrl = _submitUrl + _accessToken;
+    }
+
+    /**
+     * Constructor with spcific token
+     *
+     * @param ctx Context
+     */
+    public MozillaLocation(Context ctx, String token) {
+        super(LocationProvider.PROVIDER_MOZILLA, ctx);
+        _requestApiUrl = _requestUrl + token;
+        _submitApiUrl = _submitUrl + token;
     }
 
     /**

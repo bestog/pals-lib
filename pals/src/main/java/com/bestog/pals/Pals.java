@@ -54,31 +54,32 @@ public class Pals {
     /**
      * Enable Provider
      *
-     * @param p String Provider-Name
+     * @param provider String Provider-Name
+     * @param token    String Acces-Token
      */
-    public void enableProvider(String p) {
+    public void enableProvider(String provider, String token) {
         try {
-            Class lp = Class.forName("com.bestog.pals.provider." + p);
-            LocationProvider provider = null;
-            switch (p) {
+            Class lp = Class.forName("com.bestog.pals.provider." + provider);
+            LocationProvider locationProvider = null;
+            switch (provider) {
                 case LocationProvider.PROVIDER_MOZILLA:
-                    provider = new MozillaLocation(context);
-                    break;
-                case LocationProvider.PROVIDER_OPENBMAP:
-                    provider = new OpenBMapLocation(context);
-                    break;
-                case LocationProvider.PROVIDER_OPENCELLID:
-                    provider = new OpenCellIDLocation(context);
-                    break;
-                case LocationProvider.PROVIDER_OPENMAP:
-                    provider = new OpenMapLocation(context);
+                    locationProvider = (token != null) ? new MozillaLocation(context, token) : new MozillaLocation(context);
                     break;
                 case LocationProvider.PROVIDER_GOOGLE:
-                    provider = new GoogleLocation(context);
+                    locationProvider = (token != null) ? new GoogleLocation(context, token) : new GoogleLocation(context);
+                    break;
+                case LocationProvider.PROVIDER_OPENCELLID:
+                    locationProvider = (token != null) ? new OpenCellIDLocation(context, token) : new OpenCellIDLocation(context);
+                    break;
+                case LocationProvider.PROVIDER_OPENBMAP:
+                    locationProvider = new OpenBMapLocation(context);
+                    break;
+                case LocationProvider.PROVIDER_OPENMAP:
+                    locationProvider = new OpenMapLocation(context);
                     break;
             }
-            if (provider != null && lp != null && !enabledProviders.containsKey(p)) {
-                enabledProviders.put(p, (LocationProvider) lp.cast(provider));
+            if (locationProvider != null && lp != null && !enabledProviders.containsKey(provider)) {
+                enabledProviders.put(provider, (LocationProvider) lp.cast(locationProvider));
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

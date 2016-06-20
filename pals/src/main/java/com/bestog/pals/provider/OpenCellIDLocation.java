@@ -5,7 +5,6 @@ import android.content.Context;
 import android.location.Location;
 
 import com.bestog.pals.utils.CommonUtils;
-import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +34,17 @@ public class OpenCellIDLocation extends LocationProvider {
     public OpenCellIDLocation(Context ctx) {
         super(LocationProvider.PROVIDER_OPENCELLID, ctx);
         _requestUrl = _apiUrl + _apiToken;
+    }
+
+    /**
+     * Constructor with specific token
+     *
+     * @param ctx   Context
+     * @param token String Access-Token
+     */
+    public OpenCellIDLocation(Context ctx, String token) {
+        super(LocationProvider.PROVIDER_OPENCELLID, ctx);
+        _requestUrl = _apiUrl + token;
     }
 
     /**

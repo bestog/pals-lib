@@ -24,11 +24,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Init Pals
         pals = new Pals(this);
-        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA);
-        pals.enableProvider(LocationProvider.PROVIDER_OPENBMAP);
-        pals.enableProvider(LocationProvider.PROVIDER_GOOGLE);
-        pals.enableProvider(LocationProvider.PROVIDER_OPENMAP);
+
+        // Location-Provider with your own access-token
+        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "[YOUR ACCESS-TOKEN]");
+
+        // Location-Provider with a fallback access-token
+        // pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, null);
+
+        // Other Location-Provider
+        pals.enableProvider(LocationProvider.PROVIDER_OPENBMAP, null);
+        pals.enableProvider(LocationProvider.PROVIDER_OPENMAP, null);
+        // pals.enableProvider(LocationProvider.PROVIDER_GOOGLE, null);
+        // pals.enableProvider(LocationProvider.PROVIDER_OPENCELLID, null);
         process();
     }
 

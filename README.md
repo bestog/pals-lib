@@ -14,26 +14,26 @@ __Pull-Requests are allowed and encouraged!__
 ## Getting Started
 
 __Maven__
-```
+```xml
 <dependency>
   <groupId>com.bestog.pals</groupId>
   <artifactId>pals</artifactId>
-  <version>2.0</version>
+  <version>2.1</version>
   <type>pom</type>
 </dependency>
 ```
 
 __Gradle__
-```
-compile 'com.bestog.pals:pals:2.0'
+```java
+compile 'com.bestog.pals:pals:2.1'
 ```
 
 ## Usage
-__Permissions (AndroidManifest)__
-```
+__AndroidManifest.xml__
+```xml
+<uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-<uses-permission android:name="android.permission.INTERNET"/>
 // Only for submit-request
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 ```
@@ -42,12 +42,20 @@ __Basics__
 ```java
 // Initialize Pals
 Pals pals = new Pals(context);
+
 // Enable Provider
-pals.enableProvider(LocationProvider.PROVIDER_MOZILLA);
-pals.enableProvider(LocationProvider.PROVIDER_OPENBMAP);
+// - Location-Provider with your own access-token
+pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "[YOUR ACCESS-TOKEN]");
+// - Location-Provider with a fallback access-token
+pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, null);
+// Disable Provider
+pals.disabledProvider(LocationProvider.PROVIDER_MOZILLA);
 ...
 ```
+[Available Location-Provider](#provider)
+
 __Request__
+
 A request that returns the current approximate position of the user as a result.
 ```java
 pals.request(new IRequest() {
@@ -63,8 +71,10 @@ pals.request(new IRequest() {
 });
 ```
 __Submit__
+
 To guarantee accurate position of a user, the database of location-services with new data needs to be filled.
-Help us with it and collect new data!
+
+Support the location services and collect new data!
 ```java
 pals.submit(new ISubmit() {
     @Override
@@ -76,32 +86,61 @@ pals.submit(new ISubmit() {
 });
 ```
 
-## Provider
+## <a name="provider"></a>Provider
 
 __Mozilla Location Service__
+
 `LocationProvider.PROVIDER_MOZILLA`
+
 [+] Request
+
 [+] Submit
 
-__OpenBMap__
-`LocationProvider.PROVIDER_OPENBMAP`
-[+] Request
-[-] Submit
+[+] Access-Token
 
-__OpenCellID__
-`LocationProvider.PROVIDER_OPENCELLID`
-[+] Request
-[-] Submit
-
-__OpenMap__
-`LocationProvider.PROVIDER_OPENMAP`
-[+] Request
-[-] Submit
 
 __Google Geolocation__
+
 `LocationProvider.PROVIDER_GOOGLE`
+
 [+] Request
+
 [-] Submit
+
+[+] Access-Token
+
+__OpenCellID__
+
+`LocationProvider.PROVIDER_OPENCELLID`
+
+[+] Request
+
+[-] Submit
+
+[+] Access-Token
+
+
+__OpenBMap__
+
+`LocationProvider.PROVIDER_OPENBMAP`
+
+[+] Request
+
+[-] Submit
+
+[-] Access-Token
+
+
+__OpenMap__
+
+`LocationProvider.PROVIDER_OPENMAP`
+
+[+] Request
+
+[-] Submit
+
+[-] Access-Token
+
 
 ## Functions
 
