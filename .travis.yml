@@ -12,5 +12,8 @@ android:
 jdk: oraclejdk8
 sudo: false
 
+before_install:
+ - chmod +x gradlew
+
 script:
   - ./gradlew clean build
