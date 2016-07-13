@@ -10,7 +10,6 @@ android:
     - 'android-sdk-license-.+'
 
 jdk: oraclejdk8
-
 sudo: false
 
 script:
