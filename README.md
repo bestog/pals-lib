@@ -1,5 +1,7 @@
 # Privacy Aware Location Service Library
 [![Download](https://api.bintray.com/packages/bestog/pals/pals/images/download.svg)](https://bintray.com/bestog/pals/pals/_latestVersion)
+[![Build Status](https://travis-ci.org/bestog/pals-lib.svg?branch=master)](https://travis-ci.org/bestog/pals-lib)
+
 [![API](https://img.shields.io/badge/API-11%2B-green.svg)](https://github.com/bestog/pals-lib/tree/master)
 
 __Privacy Aware Location Service Library for Android -- MLS, OpenCellID, OpenBMap and OpenWLANMap__
