@@ -36,5 +36,5 @@ android {
     }
 }
 
-apply from: '$rootProject.projectDir/jcenter-install.gradle'
-apply from: '$rootProject.projectDir/jcenter-bintray.gradle'
+apply from: '../jcenter-install.gradle'
+apply from: '../jcenter-bintray.gradle'
