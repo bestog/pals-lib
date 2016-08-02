@@ -1,4 +1,4 @@
-package com.bestog.pals.utils;
+package com.bestog.pals.objects;
 
 /**
  * Class: GeoResult
@@ -14,7 +14,7 @@ public class GeoResult {
     public GeoResult() {
     }
 
-    public GeoResult(Double lat, Double lon, int acc) {
+    public GeoResult(double lat, double lon, int acc) {
         latitude = lat;
         longitude = lon;
         accuracy = acc;

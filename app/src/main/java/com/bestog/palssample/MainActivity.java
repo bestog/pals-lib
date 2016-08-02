@@ -9,8 +9,8 @@ import android.widget.TextView;
 import com.bestog.pals.Pals;
 import com.bestog.pals.interfaces.IRequest;
 import com.bestog.pals.interfaces.ISubmit;
+import com.bestog.pals.objects.GeoResult;
 import com.bestog.pals.provider.LocationProvider;
-import com.bestog.pals.utils.GeoResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,35 +24,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         // Init Pals
         pals = new Pals(this);
 
         // Location-Provider with your own access-token
-        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "[YOUR ACCESS-TOKEN]");
+        // pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "[YOUR ACCESS-TOKEN]");
 
         // Location-Provider with a fallback access-token
-        // pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, null);
+        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, null);
 
         // Other Location-Provider
-        pals.enableProvider(LocationProvider.PROVIDER_OPENBMAP, null);
-        pals.enableProvider(LocationProvider.PROVIDER_OPENMAP, null);
+        // pals.enableProvider(LocationProvider.PROVIDER_OPENBMAP, null);
+        // pals.enableProvider(LocationProvider.PROVIDER_OPENMAP, null);
         // pals.enableProvider(LocationProvider.PROVIDER_GOOGLE, null);
         // pals.enableProvider(LocationProvider.PROVIDER_OPENCELLID, null);
+
         process();
     }
 
     private void process() {
-        final TextView resultat = (TextView) findViewById(R.id.result);
-        if (resultat != null) {
-            resultat.setText("");
+        final TextView results = (TextView) findViewById(R.id.result);
+        if (results != null) {
+            results.setText("");
         }
         pals.request(new IRequest() {
             @Override
             public void onComplete(GeoResult result, boolean valid) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss", Locale.GERMAN);
                 String out = String.format("Lat: %1$s\nLon: %2$s\nAcc: %3$s\n\nTime: %4$s", result.getLatitude(), result.getLongitude(), result.getAccuracy(), sdf.format(new Date()));
-                if (resultat != null) {
-                    resultat.setText(out);
+                if (results != null) {
+                    results.setText(out);
                 }
             }
         });

@@ -3,8 +3,9 @@ package com.bestog.pals.provider;
 import android.content.Context;
 import android.location.Location;
 
+import com.bestog.pals.objects.Cell;
+import com.bestog.pals.objects.Wifi;
 import com.bestog.pals.utils.CommonUtils;
-import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,62 +36,23 @@ public class OpenBMapLocation extends LocationProvider {
     }
 
     /**
-     * Convert a CellInfo in a specific format
-     *
-     * @param cell HashMap CellInfo
-     * @return JSONObject
-     */
-    private static JSONObject convertCell(HashMap<String, String> cell) {
-        JSONObject result = new JSONObject();
-        try {
-            result.put("cellId", cell.get("cid"));
-            result.put("locationAreaCode", cell.get("lac"));
-            result.put("mobileCountryCode", cell.get("mcc"));
-            result.put("mobileNetworkCode", cell.get("mnc"));
-        } catch (JSONException e) {
-            // @todo better logging
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    /**
-     * Convert a WifiSpot in a specific format
-     *
-     * @param wifi HashMap Wifi
-     * @return JSONObject
-     */
-    private static JSONObject convertWifi(HashMap<String, String> wifi) {
-        JSONObject result = new JSONObject();
-        try {
-            result.put("macAddress", wifi.get("key"));
-            result.put("signalStrength", "-54");
-        } catch (JSONException e) {
-            // @todo better logging
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    /**
      * request Action
      *
-     * @return String
+     * @return HashMap
      */
     @Override
-    public String requestAction() {
+    public HashMap<String, String> requestAction() {
+        // @todo change algorithm
         JSONObject request = new JSONObject();
-        List<HashMap<String, String>> cellTowers = getCellTowers();
-        List<HashMap<String, String>> _wifiSpots = getWifiSpots();
+        List<Cell> cellTowers = getCellTowers();
+        List<Wifi> wifiSpots = getWifiSpots();
         JSONArray wifiArray = new JSONArray();
-        for (HashMap<String, String> wifi : _wifiSpots) {
+        for (Wifi wifi : wifiSpots) {
             wifiArray.put(convertWifi(wifi));
         }
         JSONArray cellArray = new JSONArray();
-        for (HashMap<String, String> cell : cellTowers) {
-            if (!cell.get("cid").equals(LocationProvider.UNKNOWN_CELLID)) {
-                cellArray.put(convertCell(cell));
-            }
+        for (Cell cell : cellTowers) {
+            cellArray.put(convertCell(cell));
         }
         try {
             request.put("wifiAccessPoints", wifiArray);
@@ -113,7 +75,7 @@ public class OpenBMapLocation extends LocationProvider {
             JSONObject jResponse = new JSONObject(response);
             if (!jResponse.has("error")) {
                 if (jResponse.has("location") && jResponse.getJSONObject("location").has("lat")) {
-                    if (jResponse.has("location") && jResponse.getDouble("accuracy") < 30000.0d) {
+                    if (jResponse.has("location")) {
                         JSONObject jsonObject = jResponse.getJSONObject("location");
                         setLatitude(jsonObject.getDouble("lat"));
                         setLongitude(jsonObject.getDouble("lng"));
@@ -130,22 +92,30 @@ public class OpenBMapLocation extends LocationProvider {
     /**
      * validate result
      *
-     * @param response String
+     * @param response HashMap
      * @return boolean
      */
     @Override
-    public boolean requestValidation(String response) {
-        return true;
+    public boolean requestValidation(HashMap<String, String> response) {
+        if (response.get("response").isEmpty()) {
+            try {
+                new JSONObject(response.get("response"));
+                return true;
+            } catch (JSONException e) {
+                return false;
+            }
+        }
+        return false;
     }
 
     /**
      * submit a location
      *
-     * @return String
+     * @return HashMap
      */
     @Override
-    public String submitAction(Location position) {
-        return "";
+    public HashMap<String, String> submitAction(Location position) {
+        return new HashMap<>();
     }
 
     /**
@@ -155,7 +125,45 @@ public class OpenBMapLocation extends LocationProvider {
      * @return boolean
      */
     @Override
-    public boolean submitValidation(String response) {
+    public boolean submitValidation(HashMap<String, String> response) {
         return true;
+    }
+
+    /**
+     * Convert a CellInfo in a specific format
+     *
+     * @param cell HashMap CellInfo
+     * @return JSONObject
+     */
+    private static JSONObject convertCell(Cell cell) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("cellId", cell.cid);
+            result.put("locationAreaCode", cell.lac);
+            result.put("mobileCountryCode", cell.mcc);
+            result.put("mobileNetworkCode", cell.mnc);
+        } catch (JSONException e) {
+            // @todo better logging
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * Convert a WifiSpot in a specific format
+     *
+     * @param wifi HashMap Wifi
+     * @return JSONObject
+     */
+    private static JSONObject convertWifi(Wifi wifi) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("macAddress", wifi.mac);
+            result.put("signalStrength", wifi.signal);
+        } catch (JSONException e) {
+            // @todo better logging
+            e.printStackTrace();
+        }
+        return result;
     }
 }

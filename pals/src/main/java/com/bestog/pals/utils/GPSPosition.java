@@ -51,7 +51,7 @@ public class GPSPosition {
                 location = locationManager.getLastKnownLocation(locationManager.getBestProvider(new Criteria(), true));
             } catch (SecurityException e) {
                 //@todo: better logging
-                complete(location, false);
+                complete(null, false);
                 e.printStackTrace();
             }
             if (location != null

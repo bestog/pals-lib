@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 
 /**
  * Class: CommonUtils
@@ -28,8 +29,10 @@ public final class CommonUtils {
      * @param contentType Content-Type
      * @return String
      */
-    public static String httpRequest(String url, String body, String httpMethod, String contentType) {
-        InputStream inputStream = null;
+    public static HashMap<String, String> httpRequest(String url, String body, String httpMethod, String contentType) {
+        String response;
+        String error;
+        HashMap<String, String> out = new HashMap<>();
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setReadTimeout(10000);
@@ -42,13 +45,15 @@ public final class CommonUtils {
             OutputStream os = new BufferedOutputStream(conn.getOutputStream());
             os.write(body.getBytes());
             os.flush();
-            int status = conn.getResponseCode();
-            inputStream = status >= 400 ? conn.getErrorStream() : conn.getInputStream();
+            response = CommonUtils.streamToString(conn.getInputStream());
+            out.put("response", response);
+            error = CommonUtils.streamToString(conn.getErrorStream());
+            out.put("error", error);
         } catch (IOException e) {
             // @todo better logging
             e.printStackTrace();
         }
-        return CommonUtils.streamToString(inputStream);
+        return out;
     }
 
     /**

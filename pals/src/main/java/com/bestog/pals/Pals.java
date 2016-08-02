@@ -13,7 +13,7 @@ import com.bestog.pals.provider.OpenBMapLocation;
 import com.bestog.pals.provider.OpenCellIDLocation;
 import com.bestog.pals.provider.OpenMapLocation;
 import com.bestog.pals.utils.GPSPosition;
-import com.bestog.pals.utils.GeoResult;
+import com.bestog.pals.objects.GeoResult;
 import com.bestog.pals.utils.Trilateration;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class Pals {
      * Enable Provider
      *
      * @param provider String Provider-Name
-     * @param token    String Acces-Token
+     * @param token    String Access-Token
      */
     public void enableProvider(String provider, String token) {
         try {
@@ -86,10 +86,6 @@ public class Pals {
         }
     }
 
-    public String enabledProvider() {
-        return enabledProviders.toString();
-    }
-
     /**
      * Disable provider
      *
@@ -99,6 +95,24 @@ public class Pals {
         if (enabledProviders.containsKey(provider)) {
             enabledProviders.remove(provider);
         }
+    }
+
+    /**
+     * @return ArrayList
+     */
+    public ArrayList<String> getEnabledProviderList() {
+        ArrayList<String> list = new ArrayList<>();
+        for (Map.Entry<String, LocationProvider> lp : enabledProviders.entrySet()) {
+            list.add(lp.getKey());
+        }
+        return list;
+    }
+
+    /**
+     * @return HashMap
+     */
+    public Map<String, LocationProvider> getEnabledProviders() {
+        return enabledProviders;
     }
 
     /**

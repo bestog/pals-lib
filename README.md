@@ -1,7 +1,5 @@
 # Privacy Aware Location Service Library
 [![Download](https://api.bintray.com/packages/bestog/pals/pals/images/download.svg)](https://bintray.com/bestog/pals/pals/_latestVersion)
-[![Build Status](https://travis-ci.org/bestog/pals-lib.svg?branch=master)](https://travis-ci.org/bestog/pals-lib)
-
 [![API](https://img.shields.io/badge/API-11%2B-green.svg)](https://github.com/bestog/pals-lib/tree/master)
 
 __Privacy Aware Location Service Library for Android -- MLS, OpenCellID, OpenBMap and OpenWLANMap__
@@ -20,14 +18,14 @@ __Maven__
 <dependency>
   <groupId>com.bestog.pals</groupId>
   <artifactId>pals</artifactId>
-  <version>2.1</version>
+  <version>2.2</version>
   <type>pom</type>
 </dependency>
 ```
 
 __Gradle__
 ```java
-compile 'com.bestog.pals:pals:2.1'
+compile 'com.bestog.pals:pals:2.2'
 ```
 
 ## Usage
@@ -90,66 +88,23 @@ pals.submit(new ISubmit() {
 
 ## <a name="provider"></a>Provider
 
-__Mozilla Location Service__
-
-`LocationProvider.PROVIDER_MOZILLA`
-
-[+] Request
-
-[+] Submit
-
-[+] Access-Token
-
-
-__Google Geolocation__
-
-`LocationProvider.PROVIDER_GOOGLE`
-
-[+] Request
-
-[-] Submit
-
-[+] Access-Token
-
-__OpenCellID__
-
-`LocationProvider.PROVIDER_OPENCELLID`
-
-[+] Request
-
-[-] Submit
-
-[+] Access-Token
-
-
-__OpenBMap__
-
-`LocationProvider.PROVIDER_OPENBMAP`
-
-[+] Request
-
-[-] Submit
-
-[-] Access-Token
-
-
-__OpenMap__
-
-`LocationProvider.PROVIDER_OPENMAP`
-
-[+] Request
-
-[-] Submit
-
-[-] Access-Token
-
+| Location-Provider | Constant | Request | Submit | Access-Token |
+| :--- | :--- | :---: | :---: | :---: |
+|Mozilla Location|`LocationProvider.PROVIDER_MOZILLA`|**X**|**X**|**X**|
+|OpenCellID|`LocationProvider.PROVIDER_OPENCELLID`|**X**| |**X**|
+|OpenBMap|`LocationProvider.PROVIDER_OPENBMAP`|**X**| | |
+|OpenWLANMap|`LocationProvider.PROVIDER_OPENMAP`|**X**| | |
+|Google Geolocation|`LocationProvider.PROVIDER_GOOGLE`|**X**| |**X**|
 
 ## Functions
 
 #### enableProvider
 Enable a location-provider for the geolocation.
 ```java
-void enableProvider(String provider);
+// with your own access-token
+void enableProvider(String provider, String token);
+// with fallback access-token
+void enableProvider(String provider, null);
 ```
 
 #### disableProvider
@@ -158,10 +113,16 @@ Disable a location-provider for the geolocation.
 void disableProvider(String provider);
 ```
 
-#### enabledProvider
-Get all enabled location-provider as a comma-seperated string
+#### getEnabledProviders
+Get all enabled location-provider as a list with location-provider-objects
 ```java
-String enabledProvider();
+Map<String, LocationProvider> getEnabledProviders();
+```
+
+#### getEnabledProviderList
+Get all enabled location-provider as a list
+```java
+ArrayList<String> getEnabledProviderList();
 ```
 
 #### request
@@ -187,3 +148,19 @@ Set a specific algorithm for the calculation
 ```java
 void setTrilaterateAlg(String alg);
 ```
+ 
+## License
+
+    Copyright 2016 - bestog
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.

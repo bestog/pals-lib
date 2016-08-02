@@ -2,8 +2,9 @@ package com.bestog.pals.provider;
 
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
 
+import com.bestog.pals.objects.Cell;
+import com.bestog.pals.objects.Wifi;
 import com.bestog.pals.utils.CommonUtils;
 
 import org.json.JSONArray;
@@ -40,12 +41,13 @@ public class MozillaLocation extends LocationProvider {
     }
 
     /**
-     * Constructor with spcific token
+     * Constructor with specific token
      *
-     * @param ctx Context
+     * @param ctx   Context
+     * @param token String Access-Token
      */
     public MozillaLocation(Context ctx, String token) {
-        super(LocationProvider.PROVIDER_MOZILLA, ctx);
+        super(LocationProvider.PROVIDER_MOZILLA, token, ctx);
         _requestApiUrl = _requestUrl + token;
         _submitApiUrl = _submitUrl + token;
     }
@@ -53,23 +55,21 @@ public class MozillaLocation extends LocationProvider {
     /**
      * request Action
      *
-     * @return String
+     * @return HashMap
      */
     @Override
-    public String requestAction() {
+    public HashMap<String, String> requestAction() {
         JSONObject request = new JSONObject();
-        List<HashMap<String, String>> cellTowers = getCellTowers();
-        List<HashMap<String, String>> wifiSpots = getWifiSpots();
+        List<Cell> cellTowers = getCellTowers();
+        List<Wifi> wifiSpots = getWifiSpots();
         try {
             JSONArray cellArray = new JSONArray();
-            for (HashMap<String, String> cell : cellTowers) {
-                if (!cell.get("cid").equals(LocationProvider.UNKNOWN_CELLID)) {
-                    cellArray.put(convertCell(cell));
-                }
+            for (Cell cell : cellTowers) {
+                cellArray.put(convertCell(cell));
             }
             request.put("cellTowers", cellArray);
             JSONArray wifiArray = new JSONArray();
-            for (HashMap<String, String> wifi : wifiSpots) {
+            for (Wifi wifi : wifiSpots) {
                 wifiArray.put(convertWifi(wifi));
             }
             request.put("wifiAccessPoints", wifiArray);
@@ -87,20 +87,18 @@ public class MozillaLocation extends LocationProvider {
      */
     @Override
     public void requestResult(String response) {
-        if (requestValidation(response)) {
-            try {
-                JSONObject jResponse = new JSONObject(response);
-                if (!jResponse.has("error")) {
-                    if (jResponse.has("location")) {
-                        JSONObject jsonObject = jResponse.getJSONObject("location");
-                        super.setLatitude(jsonObject.getDouble("lat"));
-                        super.setLongitude(jsonObject.getDouble("lng"));
-                        super.setAccuracy(jResponse.getInt("accuracy"));
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+        try {
+            JSONObject jResponse = new JSONObject(response);
+            if (jResponse.has("location")) {
+                JSONObject jsonObject = jResponse.getJSONObject("location");
+                super.setLatitude(jsonObject.getDouble("lat"));
+                super.setLongitude(jsonObject.getDouble("lng"));
+                float accuracy = Float.parseFloat(jResponse.getString("accuracy"));
+                super.setAccuracy(Math.round(accuracy));
             }
+        } catch (JSONException e) {
+            // @todo better logging
+            e.printStackTrace();
         }
     }
 
@@ -111,31 +109,36 @@ public class MozillaLocation extends LocationProvider {
      * @return boolean
      */
     @Override
-    protected boolean requestValidation(String response) {
-        return true;
+    protected boolean requestValidation(HashMap<String, String> response) {
+        try {
+            JSONObject jResponse = new JSONObject(response.get("response"));
+            return (!jResponse.has("error"));
+        } catch (JSONException e) {
+            // @todo better logging
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**
      * submit a location
      *
-     * @return String
+     * @return HashMap
      */
     @Override
-    public String submitAction(Location position) {
+    public HashMap<String, String> submitAction(Location position) {
         JSONObject reports = new JSONObject();
         JSONObject report = new JSONObject();
-        List<HashMap<String, String>> cellTowers = getCellTowers();
-        List<HashMap<String, String>> wifiSpots = getWifiSpots();
+        List<Cell> cellTowers = getCellTowers();
+        List<Wifi> wifiSpots = getWifiSpots();
         try {
             JSONArray cellArray = new JSONArray();
-            for (HashMap<String, String> cell : cellTowers) {
-                if (!cell.get("cid").equals(LocationProvider.UNKNOWN_CELLID)) {
-                    cellArray.put(convertCell(cell));
-                }
+            for (Cell cell : cellTowers) {
+                cellArray.put(convertCell(cell));
             }
             report.put("cellTowers", cellArray);
             JSONArray wifiArray = new JSONArray();
-            for (HashMap<String, String> wifi : wifiSpots) {
+            for (Wifi wifi : wifiSpots) {
                 wifiArray.put(convertWifi(wifi));
             }
             report.put("wifiAccessPoints", wifiArray);
@@ -158,26 +161,24 @@ public class MozillaLocation extends LocationProvider {
      * @return boolean
      */
     @Override
-    public boolean submitValidation(String response) {
+    public boolean submitValidation(HashMap<String, String> response) {
         return response.isEmpty();
     }
 
     /**
      * Convert a CellInfo in a specific format
      *
-     * @param cell HashMap CellInfo
+     * @param cell Cell CellInfo
      * @return JSONObject
      */
-    private static JSONObject convertCell(HashMap<String, String> cell) {
+    private static JSONObject convertCell(Cell cell) {
         JSONObject result = new JSONObject();
         try {
-            result.put("mobileCountryCode", Integer.parseInt(cell.get("mnc")));
-            result.put("mobileNetworkCode", Integer.parseInt(cell.get("mcc")));
-            result.put("locationAreaCode", Integer.parseInt(cell.get("lac")));
-            result.put("cellId", Integer.parseInt(cell.get("cid")));
-            if (cell.containsKey("dbm")) {
-                result.put("signalStrength", Integer.parseInt(cell.get("dbm")));
-            }
+            result.put("mobileCountryCode", cell.mcc);
+            result.put("mobileNetworkCode", cell.mnc);
+            result.put("locationAreaCode", cell.lac);
+            result.put("cellId", cell.cid);
+            result.put("signalStrength", cell.dbm);
         } catch (JSONException e) {
             // @todo better logging
             e.printStackTrace();
@@ -191,13 +192,13 @@ public class MozillaLocation extends LocationProvider {
      * @param wifi HashMap Wifi
      * @return JSONObject
      */
-    private static JSONObject convertWifi(HashMap<String, String> wifi) {
+    private static JSONObject convertWifi(Wifi wifi) {
         JSONObject result = new JSONObject();
         try {
-            result.put("macAddress", wifi.get("key"));
-            result.put("channel", Integer.parseInt(wifi.get("channel")));
-            result.put("frequency", Integer.parseInt(wifi.get("frequency")));
-            result.put("signalStrength", Integer.parseInt(wifi.get("signal")));
+            result.put("macAddress", wifi.mac);
+            result.put("channel", wifi.channel);
+            result.put("frequency", wifi.freq);
+            result.put("signalStrength", wifi.signal);
         } catch (JSONException e) {
             // @todo better logging
             e.printStackTrace();
@@ -205,6 +206,12 @@ public class MozillaLocation extends LocationProvider {
         return result;
     }
 
+    /**
+     * Convert position to a valid format.
+     *
+     * @param position Location
+     * @return JSONObject
+     */
     private static JSONObject convertPosition(Location position) {
         JSONObject result = new JSONObject();
         try {
@@ -215,6 +222,7 @@ public class MozillaLocation extends LocationProvider {
             result.put("speed", position.getSpeed());
             result.put("source", "gps");
         } catch (JSONException e) {
+            // @todo better logging
             e.printStackTrace();
         }
         return result;

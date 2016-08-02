@@ -1,5 +1,7 @@
 package com.bestog.pals.utils;
 
+import com.bestog.pals.objects.GeoResult;
+
 import java.util.List;
 
 /**
@@ -11,7 +13,7 @@ public final class Trilateration {
     public static final String ALG_WEIGHTS = "weights";
 
     /**
-     * All coordinates are added together and it creates the final result (rudimentarily)
+     * All coordinates are added together and it creates the final result (rudimentary)
      * http://www.geomidpoint.com/calculation.html = Point A
      *
      * @param resultList locations
@@ -47,7 +49,7 @@ public final class Trilateration {
     }
 
     public static GeoResult weights(List<GeoResult> geoResultList) {
-
+        // @todo
         return new GeoResult();
     }
 

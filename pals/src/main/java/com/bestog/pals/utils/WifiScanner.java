@@ -2,10 +2,12 @@ package com.bestog.pals.utils;
 
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+
+import com.bestog.pals.objects.Wifi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,6 +20,11 @@ public class WifiScanner {
 
     private final WifiManager _wifiManager;
 
+    /**
+     * Constructor
+     *
+     * @param wifiManager Wifi-Manager
+     */
     public WifiScanner(WifiManager wifiManager) {
         _wifiManager = wifiManager;
     }
@@ -36,20 +43,37 @@ public class WifiScanner {
     }
 
     /**
+     * @return boolean
+     */
+    private boolean isWifiEnabled() {
+        if (_wifiManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && _wifiManager.isScanAlwaysAvailable()) {
+                return true;
+            } else if (_wifiManager.isWifiEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get Wi-Fi networks from the information from the phone and store in list
      *
      * @return ArrayList
      */
-    public List<HashMap<String, String>> getSpots() {
-        List<ScanResult> scanResultList = _wifiManager.getScanResults();
-        List<HashMap<String, String>> result = new ArrayList<>();
-        for (ScanResult wifi : scanResultList) {
-            HashMap<String, String> item = new HashMap<>();
-            item.put("signal", String.valueOf(wifi.level));
-            item.put("frequency", String.valueOf(wifi.frequency));
-            item.put("channel", String.valueOf(getChannel(wifi.frequency)));
-            item.put("key", wifi.BSSID);
-            result.add(item);
+    public List<Wifi> getSpots() {
+        List<Wifi> result = new ArrayList<>();
+        Wifi tmp;
+        if (isWifiEnabled()) {
+            List<ScanResult> scanResultList = _wifiManager.getScanResults();
+            for (ScanResult wifi : scanResultList) {
+                tmp = new Wifi();
+                tmp.signal = wifi.level;
+                tmp.freq = wifi.frequency;
+                tmp.channel = getChannel(wifi.frequency);
+                tmp.mac = wifi.BSSID;
+                result.add(tmp);
+            }
         }
         return result;
     }
