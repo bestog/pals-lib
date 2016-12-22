@@ -1,2 +1,1 @@
-include ':pals'
-include ':app'
+include ':app', ':pals'

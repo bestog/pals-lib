@@ -1,17 +1,14 @@
 package com.bestog.pals.provider;
 
 import android.content.Context;
-import android.location.Location;
 
-import com.bestog.pals.objects.Cell;
-import com.bestog.pals.objects.Wifi;
 import com.bestog.pals.utils.CommonUtils;
+import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,14 +17,16 @@ import java.util.List;
  * Link: https://location.services.mozilla.com
  *
  * @author bestog
+ * @version 1.0
  */
 public class MozillaLocation extends LocationProvider {
 
     private final String _requestUrl = "https://location.services.mozilla.com/v1/geolocate?key=";
+    private final String _requestToken = "8a677f74-e6e6-43ed-b0db-9926efd0bbe4";
     private final String _requestApiUrl;
     private final String _submitUrl = "https://location.services.mozilla.com/v2/geosubmit?key=";
+    private final String _submitToken = "8a677f74-e6e6-43ed-b0db-9926efd0bbe4";
     private final String _submitApiUrl;
-    private final String _accessToken = "8a677f74-e6e6-43ed-b0db-9926efd0bbe4";
 
     /**
      * Constructor
@@ -36,149 +35,26 @@ public class MozillaLocation extends LocationProvider {
      */
     public MozillaLocation(Context ctx) {
         super(LocationProvider.PROVIDER_MOZILLA, ctx);
-        _requestApiUrl = _requestUrl + _accessToken;
-        _submitApiUrl = _submitUrl + _accessToken;
-    }
-
-    /**
-     * Constructor with specific token
-     *
-     * @param ctx   Context
-     * @param token String Access-Token
-     */
-    public MozillaLocation(Context ctx, String token) {
-        super(LocationProvider.PROVIDER_MOZILLA, token, ctx);
-        _requestApiUrl = _requestUrl + token;
-        _submitApiUrl = _submitUrl + token;
-    }
-
-    /**
-     * request Action
-     *
-     * @return HashMap
-     */
-    @Override
-    public HashMap<String, String> requestAction() {
-        JSONObject request = new JSONObject();
-        List<Cell> cellTowers = getCellTowers();
-        List<Wifi> wifiSpots = getWifiSpots();
-        try {
-            JSONArray cellArray = new JSONArray();
-            for (Cell cell : cellTowers) {
-                cellArray.put(convertCell(cell));
-            }
-            request.put("cellTowers", cellArray);
-            JSONArray wifiArray = new JSONArray();
-            for (Wifi wifi : wifiSpots) {
-                wifiArray.put(convertWifi(wifi));
-            }
-            request.put("wifiAccessPoints", wifiArray);
-        } catch (JSONException e) {
-            // @todo better logging
-            e.printStackTrace();
-        }
-        return CommonUtils.httpRequest(_requestApiUrl, request.toString(), "POST", "application/json;charset=utf-8");
-    }
-
-    /**
-     * request result
-     *
-     * @param response String
-     */
-    @Override
-    public void requestResult(String response) {
-        try {
-            JSONObject jResponse = new JSONObject(response);
-            if (jResponse.has("location")) {
-                JSONObject jsonObject = jResponse.getJSONObject("location");
-                super.setLatitude(jsonObject.getDouble("lat"));
-                super.setLongitude(jsonObject.getDouble("lng"));
-                float accuracy = Float.parseFloat(jResponse.getString("accuracy"));
-                super.setAccuracy(Math.round(accuracy));
-            }
-        } catch (JSONException e) {
-            // @todo better logging
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * validate result
-     *
-     * @param response String
-     * @return boolean
-     */
-    @Override
-    protected boolean requestValidation(HashMap<String, String> response) {
-        try {
-            JSONObject jResponse = new JSONObject(response.get("response"));
-            return (!jResponse.has("error"));
-        } catch (JSONException e) {
-            // @todo better logging
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * submit a location
-     *
-     * @return HashMap
-     */
-    @Override
-    public HashMap<String, String> submitAction(Location position) {
-        JSONObject reports = new JSONObject();
-        JSONObject report = new JSONObject();
-        List<Cell> cellTowers = getCellTowers();
-        List<Wifi> wifiSpots = getWifiSpots();
-        try {
-            JSONArray cellArray = new JSONArray();
-            for (Cell cell : cellTowers) {
-                cellArray.put(convertCell(cell));
-            }
-            report.put("cellTowers", cellArray);
-            JSONArray wifiArray = new JSONArray();
-            for (Wifi wifi : wifiSpots) {
-                wifiArray.put(convertWifi(wifi));
-            }
-            report.put("wifiAccessPoints", wifiArray);
-            report.put("timestamp", (new java.sql.Timestamp(Calendar.getInstance().getTime().getTime())).getTime());
-            report.put("position", convertPosition(position));
-            JSONArray jsonArray = new JSONArray();
-            jsonArray.put(report);
-            reports.put("items", jsonArray);
-        } catch (JSONException e) {
-            // @todo better logging
-            e.printStackTrace();
-        }
-        return CommonUtils.httpRequest(_submitApiUrl, reports.toString(), "POST", "application/json;charset=utf-8");
-    }
-
-    /**
-     * validate a submit
-     *
-     * @param response String
-     * @return boolean
-     */
-    @Override
-    public boolean submitValidation(HashMap<String, String> response) {
-        return response.isEmpty();
+        _requestApiUrl = _requestUrl + _requestToken;
+        _submitApiUrl = _submitUrl + _submitToken;
     }
 
     /**
      * Convert a CellInfo in a specific format
      *
-     * @param cell Cell CellInfo
+     * @param cell HashMap CellInfo
      * @return JSONObject
      */
-    private static JSONObject convertCell(Cell cell) {
+    private static JSONObject convertCell(HashMap<String, String> cell) {
         JSONObject result = new JSONObject();
         try {
-            result.put("mobileCountryCode", cell.mcc);
-            result.put("mobileNetworkCode", cell.mnc);
-            result.put("locationAreaCode", cell.lac);
-            result.put("cellId", cell.cid);
-            result.put("signalStrength", cell.dbm);
+            result.put("mobileCountryCode", Integer.parseInt(cell.get("mnc")));
+            result.put("mobileNetworkCode", Integer.parseInt(cell.get("mcc")));
+            result.put("locationAreaCode", Integer.parseInt(cell.get("lac")));
+            result.put("cellId", Integer.parseInt(cell.get("cid")));
+            if (cell.containsKey("dbm")) {
+                result.put("signalStrength", Integer.parseInt(cell.get("dbm")));
+            }
         } catch (JSONException e) {
             // @todo better logging
             e.printStackTrace();
@@ -192,13 +68,13 @@ public class MozillaLocation extends LocationProvider {
      * @param wifi HashMap Wifi
      * @return JSONObject
      */
-    private static JSONObject convertWifi(Wifi wifi) {
+    private static JSONObject convertWifi(HashMap<String, String> wifi) {
         JSONObject result = new JSONObject();
         try {
-            result.put("macAddress", wifi.mac);
-            result.put("channel", wifi.channel);
-            result.put("frequency", wifi.freq);
-            result.put("signalStrength", wifi.signal);
+            result.put("macAddress", wifi.get("key"));
+            result.put("channel", Integer.parseInt(wifi.get("channel")));
+            result.put("frequency", Integer.parseInt(wifi.get("frequency")));
+            result.put("signalStrength", Integer.parseInt(wifi.get("signal")));
         } catch (JSONException e) {
             // @todo better logging
             e.printStackTrace();
@@ -207,24 +83,93 @@ public class MozillaLocation extends LocationProvider {
     }
 
     /**
-     * Convert position to a valid format.
+     * request Action
      *
-     * @param position Location
-     * @return JSONObject
+     * @return String
      */
-    private static JSONObject convertPosition(Location position) {
-        JSONObject result = new JSONObject();
+    @Override
+    public String requestAction() {
+        JSONObject request = new JSONObject();
+        List<HashMap<String, String>> cellTowers = getCellTowers();
+        List<HashMap<String, String>> wifiSpots = getWifiSpots();
         try {
-            result.put("latitude", position.getLatitude());
-            result.put("longitude", position.getLongitude());
-            result.put("accuracy", position.getAccuracy());
-            result.put("altitude", position.getAltitude());
-            result.put("speed", position.getSpeed());
-            result.put("source", "gps");
+            JSONArray cellArray = new JSONArray();
+            for (HashMap<String, String> cell : cellTowers) {
+                if (!cell.get("cid").equals(LocationProvider.UNKNOWN_CELLID)) {
+                    cellArray.put(convertCell(cell));
+                }
+            }
+            request.put("cellTowers", cellArray);
+            JSONArray wifiArray = new JSONArray();
+            for (HashMap<String, String> wifi : wifiSpots) {
+                wifiArray.put(convertWifi(wifi));
+            }
+            request.put("wifiAccessPoints", wifiArray);
         } catch (JSONException e) {
             // @todo better logging
             e.printStackTrace();
         }
-        return result;
+        return CommonUtils.getRequest(_requestApiUrl, request.toString(), "POST", "application/json;charset=utf-8");
+    }
+
+    /**
+     * request result
+     *
+     * @param response String
+     */
+    @Override
+    public void requestResult(String response) {
+        if (requestValidation(response)) {
+            try {
+                JSONObject jResponse = new JSONObject(response);
+                if (!jResponse.has("error")) {
+                    if (jResponse.has("location")) {
+                        JSONObject jsonObject = jResponse.getJSONObject("location");
+                        super.setLatitude(jsonObject.getDouble("lat"));
+                        super.setLongitude(jsonObject.getDouble("lng"));
+                        super.setAccuracy(jResponse.getInt("accuracy"));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * validate result
+     *
+     * @param response String
+     * @return boolean
+     */
+    @Override
+    protected boolean requestValidation(String response) {
+        return true;
+    }
+
+    /**
+     * submit a location
+     *
+     * @return String
+     */
+    @Override
+    public String submitAction(GeoResult position) {
+        return "";
+    }
+
+    /**
+     * validate a submit
+     *
+     * @param response String
+     * @return boolean
+     */
+    @Override
+    public boolean submitValidation(String response) {
+        return true;
+    }
+
+    @Override
+    protected boolean submitResult(String response) {
+        return true;
     }
 }

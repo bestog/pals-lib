@@ -1,27 +1,15 @@
 package com.bestog.pals.utils;
 
 import android.os.Build;
-import android.telephony.CellIdentityCdma;
 import android.telephony.CellIdentityGsm;
-import android.telephony.CellIdentityLte;
-import android.telephony.CellIdentityWcdma;
 import android.telephony.CellInfo;
-import android.telephony.CellInfoCdma;
 import android.telephony.CellInfoGsm;
-import android.telephony.CellInfoLte;
-import android.telephony.CellInfoWcdma;
-import android.telephony.CellLocation;
-import android.telephony.CellSignalStrengthCdma;
 import android.telephony.CellSignalStrengthGsm;
-import android.telephony.CellSignalStrengthLte;
-import android.telephony.CellSignalStrengthWcdma;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
-import android.telephony.gsm.GsmCellLocation;
-
-import com.bestog.pals.objects.Cell;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -34,121 +22,18 @@ public class CellScanner {
 
     private final TelephonyManager telephonyManager;
 
-    /**
-     * Constructor
-     *
-     * @param cellManager CellManager
-     */
     public CellScanner(TelephonyManager cellManager) {
         this.telephonyManager = cellManager;
     }
 
     /**
-     * Get Cellinfo from phone and store in Arraylist
+     * If MAX_INTEGER or incorrect values ​​are supplied, convert to valid format.
      *
-     * @return ArrayList
+     * @param nr Number
+     * @return int Valid number
      */
-    @SuppressWarnings("deprecation")
-    public List<Cell> getCells() {
-        List<Cell> collection = new ArrayList<>();
-        String operator = telephonyManager.getNetworkOperator();
-        Cell cell;
-        int mcc, mnc;
-        if (operator != null && operator.length() > 3) {
-            mcc = Integer.valueOf(operator.substring(0, 3));
-            mnc = Integer.valueOf(operator.substring(3));
-        } else {
-            mcc = 0;
-            mnc = 0;
-        }
-
-        CellLocation cellLocation = telephonyManager.getCellLocation();
-        if (cellLocation != null) {
-            if (cellLocation instanceof GsmCellLocation) {
-                GsmCellLocation cellInfoGsm = (GsmCellLocation) cellLocation;
-                cell = new Cell(cellInfoGsm.getCid(), cellInfoGsm.getLac(), mcc, mnc);
-                cell.psc = cellInfoGsm.getPsc();
-                collection.add(cell);
-            }
-        }
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            List<NeighboringCellInfo> neighboringCells = telephonyManager.getNeighboringCellInfo();
-            if (neighboringCells != null) {
-                for (NeighboringCellInfo c : neighboringCells) {
-                    cell = new Cell(c.getCid(), c.getLac(), mcc, mnc);
-                    cell.dbm = (-1 * 113 + 2 * c.getRssi());
-                    cell.rad = getTypeAsString(c.getNetworkType());
-                    cell.psc = c.getPsc();
-                    cell.rssi = c.getRssi();
-                    collection.add(cell);
-                }
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            List<CellInfo> cellsRawList = telephonyManager.getAllCellInfo();
-            if (cellsRawList != null) {
-                for (CellInfo c : cellsRawList) {
-                    cell = new Cell();
-                    if (c instanceof CellInfoGsm) {
-                        // GSM
-                        CellIdentityGsm cellIdentityGsm = ((CellInfoGsm) c).getCellIdentity();
-                        CellSignalStrengthGsm cellSignalStrengthGsm = ((CellInfoGsm) c).getCellSignalStrength();
-                        cell.cid = cellIdentityGsm.getCid();
-                        cell.lac = cellIdentityGsm.getLac();
-                        cell.mcc = cellIdentityGsm.getMcc();
-                        cell.mnc = cellIdentityGsm.getMnc();
-                        cell.asu = cellSignalStrengthGsm.getAsuLevel();
-                        cell.dbm = cellSignalStrengthGsm.getDbm();
-                        cell.lvl = cellSignalStrengthGsm.getLevel();
-                        cell.reg = c.isRegistered();
-                        cell.rad = "gsm";
-                    } else if (c instanceof CellInfoCdma) {
-                        // CDMA
-                        CellIdentityCdma cellIdentityCdma = ((CellInfoCdma) c).getCellIdentity();
-                        CellSignalStrengthCdma cellSignalStrengthCdma = ((CellInfoCdma) c).getCellSignalStrength();
-                        cell.cid = cellIdentityCdma.getBasestationId();
-                        cell.lac = cellIdentityCdma.getNetworkId();
-                        cell.mcc = mcc;
-                        cell.mnc = mnc;
-                        cell.asu = cellSignalStrengthCdma.getAsuLevel();
-                        cell.dbm = cellSignalStrengthCdma.getDbm();
-                        cell.lvl = cellSignalStrengthCdma.getLevel();
-                        cell.reg = c.isRegistered();
-                        cell.rad = "cdma";
-                    } else if (c instanceof CellInfoLte) {
-                        // LTE
-                        CellIdentityLte cellIdentityLte = ((CellInfoLte) c).getCellIdentity();
-                        CellSignalStrengthLte cellSignalStrengthLte = ((CellInfoLte) c).getCellSignalStrength();
-                        cell.cid = cellIdentityLte.getCi();
-                        cell.lac = cellIdentityLte.getTac();
-                        cell.mcc = cellIdentityLte.getMcc();
-                        cell.mnc = cellIdentityLte.getMnc();
-                        cell.asu = cellSignalStrengthLte.getAsuLevel();
-                        cell.dbm = cellSignalStrengthLte.getDbm();
-                        cell.lvl = cellSignalStrengthLte.getLevel();
-                        cell.reg = c.isRegistered();
-                        cell.rad = "lte";
-                    } else if (c instanceof CellInfoWcdma && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        // WCDMA
-                        CellIdentityWcdma cellIdentityWcdma = ((CellInfoWcdma) c).getCellIdentity();
-                        CellSignalStrengthWcdma cellSignalStrengthWcdma = ((CellInfoWcdma) c).getCellSignalStrength();
-                        cell.cid = cellIdentityWcdma.getCid();
-                        cell.lac = cellIdentityWcdma.getLac();
-                        cell.mcc = cellIdentityWcdma.getMcc();
-                        cell.mnc = cellIdentityWcdma.getMnc();
-                        cell.asu = cellSignalStrengthWcdma.getAsuLevel();
-                        cell.dbm = cellSignalStrengthWcdma.getDbm();
-                        cell.lvl = cellSignalStrengthWcdma.getLevel();
-                        cell.reg = c.isRegistered();
-                        cell.rad = "cdma";
-                    }
-                    collection.add(cell);
-                }
-            }
-        }
-        return collection;
+    private static int parse(int nr) {
+        return nr < Integer.MAX_VALUE ? nr : -1;
     }
 
     /**
@@ -180,11 +65,53 @@ public class CellScanner {
             case TelephonyManager.NETWORK_TYPE_EVDO_0:
             case TelephonyManager.NETWORK_TYPE_EVDO_A:
             case TelephonyManager.NETWORK_TYPE_EVDO_B:
-                out = "cdma";
+                out = "cmda";
                 break;
             default:
                 out = "";
         }
         return out;
+    }
+
+    /**
+     * Get Cell Info from the information from the phone and store in list
+     *
+     * @return ArrayList
+     */
+    public List<HashMap<String, String>> getCells() {
+        List<HashMap<String, String>> result = new ArrayList<>();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
+            for (CellInfo item : cellInfos) {
+                HashMap<String, String> cell = new HashMap<>();
+                CellInfoGsm cellInfoGsm = (CellInfoGsm) item;
+                CellIdentityGsm cellIdentity = cellInfoGsm.getCellIdentity();
+                CellSignalStrengthGsm cellStrength = cellInfoGsm.getCellSignalStrength();
+                cell.put("cid", String.valueOf(parse(cellIdentity.getCid())));
+                cell.put("lac", String.valueOf(parse(cellIdentity.getLac())));
+                cell.put("mcc", String.valueOf(parse(cellIdentity.getMcc())));
+                cell.put("mnc", String.valueOf(parse(cellIdentity.getMnc())));
+                cell.put("asu", String.valueOf(parse(cellStrength.getAsuLevel())));
+                cell.put("dbm", String.valueOf(parse(cellStrength.getDbm())));
+                cell.put("lvl", String.valueOf(parse(cellStrength.getLevel())));
+                cell.put("reg", String.valueOf(cellInfoGsm.isRegistered()));
+                result.add(cell);
+            }
+        }
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            List<NeighboringCellInfo> cellInfoList = telephonyManager.getNeighboringCellInfo();
+            String networkOperator = telephonyManager.getNetworkOperator();
+            for (NeighboringCellInfo cellInfo : cellInfoList) {
+                HashMap<String, String> cell = new HashMap<>();
+                cell.put("lac", String.valueOf(cellInfo.getLac()));
+                cell.put("cid", String.valueOf(cellInfo.getCid()));
+                cell.put("mcc", networkOperator.substring(3));
+                cell.put("mnc", networkOperator.substring(0, 3));
+                cell.put("dbm", String.valueOf(-1 * 113 + 2 * cellInfo.getRssi()));
+                cell.put("radio", getTypeAsString(cellInfo.getNetworkType()));
+                result.add(cell);
+            }
+        }
+        return result;
     }
 }

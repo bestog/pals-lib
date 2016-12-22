@@ -2,10 +2,9 @@ package com.bestog.pals.provider;
 
 
 import android.content.Context;
-import android.location.Location;
 
-import com.bestog.pals.objects.Cell;
 import com.bestog.pals.utils.CommonUtils;
+import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +19,7 @@ import java.util.List;
  * Link: http://opencellid.org
  *
  * @author bestog
+ * @version 1.0
  */
 public class OpenCellIDLocation extends LocationProvider {
 
@@ -38,40 +38,28 @@ public class OpenCellIDLocation extends LocationProvider {
     }
 
     /**
-     * Constructor with specific token
-     *
-     * @param ctx   Context
-     * @param token String Access-Token
-     */
-    public OpenCellIDLocation(Context ctx, String token) {
-        super(LocationProvider.PROVIDER_OPENCELLID, token, ctx);
-        _requestUrl = _apiUrl + token;
-    }
-
-    /**
      * request Action
      *
-     * @return HashMap
+     * @return String
      */
     @Override
-    public HashMap<String, String> requestAction() {
-        List<Cell> cellTowers = getCellTowers();
+    public String requestAction() {
+        List<HashMap<String, String>> cellTowers = getCellTowers();
         double[] d = {0.0d, 0.0d, 0.0d};
         Collection<double[]> list = new ArrayList<>();
-        for (Cell cell : cellTowers) {
-            String url = _requestUrl + "&mcc=" + cell.mcc + "&mnc=" + cell.mnc + "&cellid=" + cell.cid + "&lac=" + cell.lac + "&format=json";
-            HashMap<String, String> response = CommonUtils.httpRequest(url, "", "GET", "application/json;charset=utf-8");
-            if (requestValidation(response)) {
+        for (HashMap<String, String> cellInfo : cellTowers) {
+            String url = _requestUrl + "&mcc=" + cellInfo.get("mnc") + "&mnc=" + cellInfo
+                    .get("mcc") + "&cellid=" + cellInfo.get("cid") + "&lac=" + cellInfo
+                    .get("lac") + "&format=json";
+            String response = CommonUtils.getRequest(url, "", "GET", "application/json;charset=utf-8");
+            boolean status = requestValidation(response);
+            if (status) {
                 try {
-                    if (response.containsKey("response")) {
-                        JSONObject out = new JSONObject(response.get("response"));
-                        if (out.has("lat") && out.has("lon")) {
-                            d[0] = Double.parseDouble(out.get("lat").toString());
-                            d[1] = Double.parseDouble(out.get("lon").toString());
-                            d[2] = Double.parseDouble(out.get("range").toString());
-                            list.add(d);
-                        }
-                    }
+                    JSONObject out = new JSONObject(response);
+                    d[0] = Double.parseDouble(out.get("lat").toString());
+                    d[1] = Double.parseDouble(out.get("lon").toString());
+                    d[2] = Double.parseDouble(out.get("range").toString());
+                    list.add(d);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -85,20 +73,11 @@ public class OpenCellIDLocation extends LocationProvider {
             lon += result[1];
             range += result[2];
         }
-        HashMap<String, String> resultResponse = new HashMap<>();
-        JSONObject tmp = new JSONObject();
         int listSize = list.size();
-        try {
-            if (listSize > 0) {
-                tmp.put("lat", String.valueOf((lat / (double) listSize)));
-                tmp.put("lon", String.valueOf(lon / (double) listSize));
-                tmp.put("acc", (int) (range / (double) listSize));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        resultResponse.put("response", tmp.toString());
-        return resultResponse;
+        setLatitude(lat / (double) listSize);
+        setLongitude(lon / (double) listSize);
+        setAccuracy((int) (range / (double) listSize));
+        return "";
     }
 
     /**
@@ -108,15 +87,7 @@ public class OpenCellIDLocation extends LocationProvider {
      */
     @Override
     public void requestResult(String response) {
-        try {
-            JSONObject jResponse = new JSONObject(response);
-            super.setLatitude(jResponse.getDouble("lat"));
-            super.setLongitude(jResponse.getDouble("lon"));
-            float accuracy = Float.parseFloat(jResponse.getString("acc"));
-            super.setAccuracy(Math.round(accuracy));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
     }
 
     /**
@@ -126,18 +97,27 @@ public class OpenCellIDLocation extends LocationProvider {
      * @return boolean
      */
     @Override
-    protected boolean requestValidation(HashMap<String, String> response) {
+    protected boolean requestValidation(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            if (jsonObject.has("error")) {
+                return false;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 
     /**
      * submit a location
      *
-     * @return HashMap
+     * @return String
      */
     @Override
-    public HashMap<String, String> submitAction(Location position) {
-        return new HashMap<>();
+    public String submitAction(GeoResult position) {
+        return "";
     }
 
     /**
@@ -147,7 +127,12 @@ public class OpenCellIDLocation extends LocationProvider {
      * @return boolean
      */
     @Override
-    public boolean submitValidation(HashMap<String, String> response) {
+    public boolean submitValidation(String response) {
+        return true;
+    }
+
+    @Override
+    protected boolean submitResult(String response) {
         return true;
     }
 

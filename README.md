@@ -149,7 +149,7 @@ Set a specific algorithm for the calculation
 ```java
 void setTrilaterateAlg(String alg);
 ```
- 
+
 ## License
 
     Copyright 2016 - bestog

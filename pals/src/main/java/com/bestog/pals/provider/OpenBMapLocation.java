@@ -1,11 +1,15 @@
 package com.bestog.pals.provider;
 
 import android.content.Context;
+<<<<<<< Updated upstream:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
 import android.location.Location;
+=======
+>>>>>>> Stashed changes:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
 
 import com.bestog.pals.objects.Cell;
 import com.bestog.pals.objects.Wifi;
 import com.bestog.pals.utils.CommonUtils;
+import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,8 +118,13 @@ public class OpenBMapLocation extends LocationProvider {
      * @return HashMap
      */
     @Override
+<<<<<<< Updated upstream:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
     public HashMap<String, String> submitAction(Location position) {
         return new HashMap<>();
+=======
+    public String submitAction(GeoResult position) {
+        return "";
+>>>>>>> Stashed changes:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
     }
 
     /**
@@ -129,6 +138,7 @@ public class OpenBMapLocation extends LocationProvider {
         return true;
     }
 
+<<<<<<< Updated upstream:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
     /**
      * Convert a CellInfo in a specific format
      *
@@ -165,5 +175,10 @@ public class OpenBMapLocation extends LocationProvider {
             e.printStackTrace();
         }
         return result;
+=======
+    @Override
+    protected boolean submitResult(String response) {
+        return true;
+>>>>>>> Stashed changes:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
     }
 }
