@@ -9,8 +9,8 @@ ext {
     artifact = 'pals'
 
     libraryDescription = 'Privacy Aware Location Service Library for Android'
-    libraryVersion = '2.2'
-    libraryVersionCode = 202
+    libraryVersion = '2.3'
+    libraryVersionCode = 203
     siteUrl = 'https://github.com/bestog/pals-lib'
     gitUrl = 'https://github.com/bestog/pals-lib.git'
     developerId = 'bestog'

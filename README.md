@@ -19,14 +19,14 @@ __Maven__
 <dependency>
   <groupId>com.bestog.pals</groupId>
   <artifactId>pals</artifactId>
-  <version>2.2</version>
+  <version>2.3</version>
   <type>pom</type>
 </dependency>
 ```
 
 __Gradle__
 ```java
-compile 'com.bestog.pals:pals:2.2'
+compile 'com.bestog.pals:pals:2.3'
 ```
 
 ## Usage

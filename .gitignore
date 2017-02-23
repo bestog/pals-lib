@@ -33,7 +33,7 @@ captures/
 
 .idea
 AndroidManifest.xml
-
 app/release
-
 gradlew*
+projectFilesBackup/
+upload.txt
