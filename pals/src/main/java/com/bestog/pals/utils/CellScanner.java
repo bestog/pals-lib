@@ -8,8 +8,9 @@ import android.telephony.CellSignalStrengthGsm;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
 
+import com.bestog.pals.objects.Cell;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class CellScanner {
     }
 
     /**
-     * If MAX_INTEGER or incorrect values ​​are supplied, convert to valid format.
+     * If MAX_INTEGER or incorrect values are supplied, convert to valid format.
      *
      * @param nr Number
      * @return int Valid number
@@ -78,38 +79,39 @@ public class CellScanner {
      *
      * @return ArrayList
      */
-    public List<HashMap<String, String>> getCells() {
-        List<HashMap<String, String>> result = new ArrayList<>();
+    public List<Cell> getCells() {
+        List<Cell> result = new ArrayList<>();
+        Cell tmpCell;
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
             for (CellInfo item : cellInfos) {
-                HashMap<String, String> cell = new HashMap<>();
+                tmpCell = new Cell();
                 CellInfoGsm cellInfoGsm = (CellInfoGsm) item;
                 CellIdentityGsm cellIdentity = cellInfoGsm.getCellIdentity();
                 CellSignalStrengthGsm cellStrength = cellInfoGsm.getCellSignalStrength();
-                cell.put("cid", String.valueOf(parse(cellIdentity.getCid())));
-                cell.put("lac", String.valueOf(parse(cellIdentity.getLac())));
-                cell.put("mcc", String.valueOf(parse(cellIdentity.getMcc())));
-                cell.put("mnc", String.valueOf(parse(cellIdentity.getMnc())));
-                cell.put("asu", String.valueOf(parse(cellStrength.getAsuLevel())));
-                cell.put("dbm", String.valueOf(parse(cellStrength.getDbm())));
-                cell.put("lvl", String.valueOf(parse(cellStrength.getLevel())));
-                cell.put("reg", String.valueOf(cellInfoGsm.isRegistered()));
-                result.add(cell);
+                tmpCell.cid = parse(cellIdentity.getCid());
+                tmpCell.lac = parse(cellIdentity.getLac());
+                tmpCell.mnc = parse(cellIdentity.getMnc());
+                tmpCell.mcc = parse(cellIdentity.getMcc());
+                tmpCell.asu = parse(cellStrength.getAsuLevel());
+                tmpCell.dbm = parse(cellStrength.getDbm());
+                tmpCell.lvl = parse(cellStrength.getLevel());
+                tmpCell.reg = cellInfoGsm.isRegistered();
+                result.add(tmpCell);
             }
         }
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             List<NeighboringCellInfo> cellInfoList = telephonyManager.getNeighboringCellInfo();
             String networkOperator = telephonyManager.getNetworkOperator();
             for (NeighboringCellInfo cellInfo : cellInfoList) {
-                HashMap<String, String> cell = new HashMap<>();
-                cell.put("lac", String.valueOf(cellInfo.getLac()));
-                cell.put("cid", String.valueOf(cellInfo.getCid()));
-                cell.put("mcc", networkOperator.substring(3));
-                cell.put("mnc", networkOperator.substring(0, 3));
-                cell.put("dbm", String.valueOf(-1 * 113 + 2 * cellInfo.getRssi()));
-                cell.put("radio", getTypeAsString(cellInfo.getNetworkType()));
-                result.add(cell);
+                tmpCell = new Cell();
+                tmpCell.cid = parse(cellInfo.getCid());
+                tmpCell.lac = parse(cellInfo.getLac());
+                tmpCell.mcc = Integer.parseInt(networkOperator.substring(3));
+                tmpCell.mnc = Integer.parseInt(networkOperator.substring(0, 3));
+                tmpCell.dbm = -1 * 113 + 2 * cellInfo.getRssi();
+                tmpCell.rad = getTypeAsString(cellInfo.getNetworkType());
+                result.add(tmpCell);
             }
         }
         return result;

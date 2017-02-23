@@ -45,10 +45,10 @@ __Basics__
 Pals pals = new Pals(context);
 
 // Enable Provider
-// - Location-Provider with your own access-token
-pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "[YOUR ACCESS-TOKEN]");
-// - Location-Provider with a fallback access-token
-pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, null);
+// - Location-Provider with own token
+pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "1a2b3c4d5e6f7g8hi9");
+// - Location-Provider with fallback-token
+pals.enableProvider(LocationProvider.PROVIDER_MOZILLA);
 // Disable Provider
 pals.disabledProvider(LocationProvider.PROVIDER_MOZILLA);
 ...
@@ -102,10 +102,10 @@ pals.submit(new ISubmit() {
 #### enableProvider
 Enable a location-provider for the geolocation.
 ```java
-// with your own access-token
+// with own token
 void enableProvider(String provider, String token);
-// with fallback access-token
-void enableProvider(String provider, null);
+// with fallback-token
+void enableProvider(String provider);
 ```
 
 #### disableProvider

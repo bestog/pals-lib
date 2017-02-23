@@ -2,12 +2,13 @@ package com.bestog.pals.provider;
 
 import android.content.Context;
 
+import com.bestog.pals.objects.GeoResult;
+import com.bestog.pals.objects.ProviderResponse;
+import com.bestog.pals.objects.Wifi;
 import com.bestog.pals.utils.CommonUtils;
-import com.bestog.pals.utils.GeoResult;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -16,12 +17,10 @@ import java.util.Properties;
  * Link: https://openwifi.su
  *
  * @author bestog
- * @version 1.0
  */
 public class OpenMapLocation extends LocationProvider {
 
     private final String _apiUrl = "http://openwlanmap.org/getpos.php";
-    private final String _apiToken = "";
     private final String _requestUrl;
 
     /**
@@ -31,22 +30,22 @@ public class OpenMapLocation extends LocationProvider {
      */
     public OpenMapLocation(Context ctx) {
         super(LocationProvider.PROVIDER_OPENMAP, ctx);
-        _requestUrl = _apiUrl + _apiToken;
+        _requestUrl = _apiUrl;
     }
 
     /**
-     * request Action
+     * request action
      *
-     * @return String
+     * @return ProviderResponse
      */
     @Override
-    public String requestAction() {
+    public ProviderResponse requestAction() {
         String request = "";
-        List<HashMap<String, String>> wifiSpots = getWifiSpots();
-        for (HashMap<String, String> wifi : wifiSpots) {
-            request += wifi.get("key") + "\r\n";
+        List<Wifi> wifiSpots = getWifiSpots();
+        for (Wifi wifi : wifiSpots) {
+            request += wifi.mac + "\r\n";
         }
-        return CommonUtils.getRequest(_requestUrl, request, "POST", "application/x-www-form-urlencoded, *.*");
+        return CommonUtils.httpRequest(_requestUrl, request, "POST", "application/x-www-form-urlencoded, *.*");
     }
 
     /**
@@ -73,37 +72,46 @@ public class OpenMapLocation extends LocationProvider {
     /**
      * validate result
      *
-     * @param response String
+     * @param response ProviderResponse
      * @return boolean
      */
     @Override
-    public boolean requestValidation(String response) {
+    public boolean requestValidation(ProviderResponse response) {
+        // @todo
         return true;
     }
 
     /**
      * submit a location
      *
-     * @return String
+     * @param position GeoResult
+     * @return ProviderResponse
      */
     @Override
-    public String submitAction(GeoResult position) {
-        return "";
+    public ProviderResponse submitAction(GeoResult position) {
+        // @todo
+        return new ProviderResponse("", "");
     }
 
     /**
      * validate a submit
      *
+     * @param response ProviderResponse
+     * @return boolean
+     */
+    @Override
+    public boolean submitValidation(ProviderResponse response) {
+        // @todo
+        return true;
+    }
+
+    /**
      * @param response String
      * @return boolean
      */
     @Override
-    public boolean submitValidation(String response) {
-        return true;
-    }
-
-    @Override
     protected boolean submitResult(String response) {
+        // @todo
         return true;
     }
 

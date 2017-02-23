@@ -1,21 +1,17 @@
 package com.bestog.pals.provider;
 
 import android.content.Context;
-<<<<<<< Updated upstream:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
-import android.location.Location;
-=======
->>>>>>> Stashed changes:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
 
 import com.bestog.pals.objects.Cell;
+import com.bestog.pals.objects.GeoResult;
+import com.bestog.pals.objects.ProviderResponse;
 import com.bestog.pals.objects.Wifi;
 import com.bestog.pals.utils.CommonUtils;
-import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -42,10 +38,10 @@ public class OpenBMapLocation extends LocationProvider {
     /**
      * request Action
      *
-     * @return HashMap
+     * @return ProviderResponse
      */
     @Override
-    public HashMap<String, String> requestAction() {
+    public ProviderResponse requestAction() {
         // @todo change algorithm
         JSONObject request = new JSONObject();
         List<Cell> cellTowers = getCellTowers();
@@ -96,14 +92,14 @@ public class OpenBMapLocation extends LocationProvider {
     /**
      * validate result
      *
-     * @param response HashMap
+     * @param response ProviderResponse
      * @return boolean
      */
     @Override
-    public boolean requestValidation(HashMap<String, String> response) {
-        if (response.get("response").isEmpty()) {
+    public boolean requestValidation(ProviderResponse response) {
+        if (response.response.length() > 0) {
             try {
-                new JSONObject(response.get("response"));
+                new JSONObject(response.response);
                 return true;
             } catch (JSONException e) {
                 return false;
@@ -115,34 +111,31 @@ public class OpenBMapLocation extends LocationProvider {
     /**
      * submit a location
      *
-     * @return HashMap
+     * @param position GeoResult
+     * @return ProviderResponse
      */
     @Override
-<<<<<<< Updated upstream:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
-    public HashMap<String, String> submitAction(Location position) {
-        return new HashMap<>();
-=======
-    public String submitAction(GeoResult position) {
-        return "";
->>>>>>> Stashed changes:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
+    public ProviderResponse submitAction(GeoResult position) {
+        // @todo
+        return new ProviderResponse("", "");
     }
 
     /**
      * validate a submit
      *
-     * @param response String
+     * @param response ProviderResponse
      * @return boolean
      */
     @Override
-    public boolean submitValidation(HashMap<String, String> response) {
+    public boolean submitValidation(ProviderResponse response) {
+        // @todo
         return true;
     }
 
-<<<<<<< Updated upstream:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
     /**
-     * Convert a CellInfo in a specific format
+     * Convert a cellInfo in a specific format
      *
-     * @param cell HashMap CellInfo
+     * @param cell Cell CellInfo
      * @return JSONObject
      */
     private static JSONObject convertCell(Cell cell) {
@@ -160,9 +153,9 @@ public class OpenBMapLocation extends LocationProvider {
     }
 
     /**
-     * Convert a WifiSpot in a specific format
+     * Convert a wifiSpot in a specific format
      *
-     * @param wifi HashMap Wifi
+     * @param wifi Wifi WifiInfo
      * @return JSONObject
      */
     private static JSONObject convertWifi(Wifi wifi) {
@@ -175,10 +168,18 @@ public class OpenBMapLocation extends LocationProvider {
             e.printStackTrace();
         }
         return result;
-=======
+
+    }
+
+    /**
+     * get submit result
+     *
+     * @param response String
+     * @return boolean
+     */
     @Override
-    protected boolean submitResult(String response) {
+    public boolean submitResult(String response) {
+        // @todo
         return true;
->>>>>>> Stashed changes:pals/src/main/java/com/bestog/pals/provider/OpenBMapLocation.java
     }
 }

@@ -25,7 +25,7 @@ public final class Trilateration {
         int acc = 0;
         int validPositions = 0;
         for (GeoResult item : resultList) {
-            if (item.getLatitude() != 0.0d && item.getLongitude() != 0.0d) {
+            if (item.getLatitude() != null && item.getLongitude() != null) {
                 Double latitude = item.getLatitude() * Math.PI / 180.0;
                 Double longitude = item.getLongitude() * Math.PI / 180.0;
                 x += StrictMath.cos(latitude) * StrictMath.cos(longitude);

@@ -7,8 +7,8 @@ package com.bestog.pals.objects;
  */
 public class GeoResult {
 
-    private double latitude = 0.0d;
-    private double longitude = 0.0d;
+    private Double latitude = null;
+    private Double longitude = null;
     private int accuracy = 0;
 
     public GeoResult() {
@@ -20,7 +20,7 @@ public class GeoResult {
         accuracy = acc;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
@@ -28,7 +28,7 @@ public class GeoResult {
         this.latitude = lat;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 

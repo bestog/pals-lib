@@ -1,5 +1,7 @@
 package com.bestog.pals.utils;
 
+import com.bestog.pals.objects.ProviderResponse;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +12,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 
 /**
  * Class: CommonUtils
@@ -29,10 +30,8 @@ public final class CommonUtils {
      * @param contentType Content-Type
      * @return String
      */
-    public static HashMap<String, String> httpRequest(String url, String body, String httpMethod, String contentType) {
-        String response;
-        String error;
-        HashMap<String, String> out = new HashMap<>();
+    public static ProviderResponse httpRequest(String url, String body, String httpMethod, String contentType) {
+        ProviderResponse response = new ProviderResponse("", "");
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setReadTimeout(10000);
@@ -45,15 +44,14 @@ public final class CommonUtils {
             OutputStream os = new BufferedOutputStream(conn.getOutputStream());
             os.write(body.getBytes());
             os.flush();
-            response = CommonUtils.streamToString(conn.getInputStream());
-            out.put("response", response);
-            error = CommonUtils.streamToString(conn.getErrorStream());
-            out.put("error", error);
+            String success = CommonUtils.streamToString(conn.getInputStream());
+            String error = CommonUtils.streamToString(conn.getErrorStream());
+            response = new ProviderResponse(success, error);
         } catch (IOException e) {
             // @todo better logging
             e.printStackTrace();
         }
-        return out;
+        return response;
     }
 
     /**
@@ -63,7 +61,7 @@ public final class CommonUtils {
      * @param places decimal
      * @return double
      */
-    public static double round(double value, int places) {
+    static double round(double value, int places) {
         // check if places below 0
         places = Math.max(0, places);
         BigDecimal bd = new BigDecimal(value);

@@ -3,15 +3,16 @@ package com.bestog.pals.provider;
 
 import android.content.Context;
 
+import com.bestog.pals.objects.Cell;
+import com.bestog.pals.objects.GeoResult;
+import com.bestog.pals.objects.ProviderResponse;
 import com.bestog.pals.utils.CommonUtils;
-import com.bestog.pals.utils.GeoResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -19,7 +20,6 @@ import java.util.List;
  * Link: http://opencellid.org
  *
  * @author bestog
- * @version 1.0
  */
 public class OpenCellIDLocation extends LocationProvider {
 
@@ -30,32 +30,33 @@ public class OpenCellIDLocation extends LocationProvider {
     /**
      * Constructor
      *
-     * @param ctx Context
+     * @param ctx   Context
+     * @param token String
      */
-    public OpenCellIDLocation(Context ctx) {
+    public OpenCellIDLocation(Context ctx, String token) {
         super(LocationProvider.PROVIDER_OPENCELLID, ctx);
-        _requestUrl = _apiUrl + _apiToken;
+        _requestUrl = _apiUrl + (token != null ? token : _apiToken);
     }
 
     /**
-     * request Action
+     * request action
      *
-     * @return String
+     * @return ProviderResponse
      */
     @Override
-    public String requestAction() {
-        List<HashMap<String, String>> cellTowers = getCellTowers();
+    public ProviderResponse requestAction() {
+        List<Cell> cellTowers = getCellTowers();
         double[] d = {0.0d, 0.0d, 0.0d};
         Collection<double[]> list = new ArrayList<>();
-        for (HashMap<String, String> cellInfo : cellTowers) {
-            String url = _requestUrl + "&mcc=" + cellInfo.get("mnc") + "&mnc=" + cellInfo
-                    .get("mcc") + "&cellid=" + cellInfo.get("cid") + "&lac=" + cellInfo
-                    .get("lac") + "&format=json";
-            String response = CommonUtils.getRequest(url, "", "GET", "application/json;charset=utf-8");
+        for (Cell cellInfo : cellTowers) {
+            String url = _requestUrl + "&mcc=" + cellInfo.mcc + "&mnc=" + cellInfo
+                    .mnc + "&cellid=" + cellInfo.cid + "&lac=" + cellInfo
+                    .lac + "&format=json";
+            ProviderResponse response = CommonUtils.httpRequest(url, "", "GET", "application/json;charset=utf-8");
             boolean status = requestValidation(response);
             if (status) {
                 try {
-                    JSONObject out = new JSONObject(response);
+                    JSONObject out = new JSONObject(response.response);
                     d[0] = Double.parseDouble(out.get("lat").toString());
                     d[1] = Double.parseDouble(out.get("lon").toString());
                     d[2] = Double.parseDouble(out.get("range").toString());
@@ -77,7 +78,7 @@ public class OpenCellIDLocation extends LocationProvider {
         setLatitude(lat / (double) listSize);
         setLongitude(lon / (double) listSize);
         setAccuracy((int) (range / (double) listSize));
-        return "";
+        return new ProviderResponse("", "");
     }
 
     /**
@@ -87,19 +88,19 @@ public class OpenCellIDLocation extends LocationProvider {
      */
     @Override
     public void requestResult(String response) {
-
+        // @todo
     }
 
     /**
      * validate result
      *
-     * @param response String
+     * @param response ProviderResponse
      * @return boolean
      */
     @Override
-    protected boolean requestValidation(String response) {
+    protected boolean requestValidation(ProviderResponse response) {
         try {
-            JSONObject jsonObject = new JSONObject(response);
+            JSONObject jsonObject = new JSONObject(response.response);
             if (jsonObject.has("error")) {
                 return false;
             }
@@ -113,26 +114,36 @@ public class OpenCellIDLocation extends LocationProvider {
     /**
      * submit a location
      *
-     * @return String
+     * @param position GeoResult
+     * @return ProviderResponse
      */
     @Override
-    public String submitAction(GeoResult position) {
-        return "";
+    public ProviderResponse submitAction(GeoResult position) {
+        // @todo
+        return new ProviderResponse("", "");
     }
 
     /**
      * validate a submit
      *
+     * @param response ProviderResponse
+     * @return boolean
+     */
+    @Override
+    public boolean submitValidation(ProviderResponse response) {
+        // @todo
+        return true;
+    }
+
+    /**
+     * get submit result
+     *
      * @param response String
      * @return boolean
      */
     @Override
-    public boolean submitValidation(String response) {
-        return true;
-    }
-
-    @Override
     protected boolean submitResult(String response) {
+        // @todo
         return true;
     }
 

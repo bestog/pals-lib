@@ -4,18 +4,19 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
 
+import com.bestog.pals.objects.Cell;
+import com.bestog.pals.objects.GeoResult;
+import com.bestog.pals.objects.ProviderResponse;
+import com.bestog.pals.objects.Wifi;
 import com.bestog.pals.utils.CellScanner;
-import com.bestog.pals.utils.GeoResult;
 import com.bestog.pals.utils.WifiScanner;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * Class: Location Provider - abstract
  *
  * @author bestog
- * @version 1.0
  */
 public abstract class LocationProvider {
 
@@ -24,7 +25,7 @@ public abstract class LocationProvider {
     public static final String PROVIDER_OPENCELLID = "OpenCellIDLocation";
     public static final String PROVIDER_GOOGLE = "GoogleLocation";
     public static final String PROVIDER_OPENMAP = "OpenMapLocation";
-    static final String UNKNOWN_CELLID = "-1";
+    static final int UNKNOWN_CELLID = -1;
     static final String NULL = "0.0d";
     private final String title;
     private final CellScanner cellScanner;
@@ -46,30 +47,26 @@ public abstract class LocationProvider {
     }
 
     public void request() {
-        String response = requestAction();
+        ProviderResponse response = requestAction();
         if (requestValidation(response)) {
-            requestResult(response);
+            requestResult(response.response);
         }
     }
 
     public boolean submit(GeoResult position) {
-        String response = submitAction(position);
-        if (submitValidation(response)) {
-            return submitResult(response);
-        } else {
-            return false;
-        }
+        ProviderResponse response = submitAction(position);
+        return submitValidation(response) && submitResult(response.response);
     }
 
-    protected abstract String requestAction();
+    protected abstract ProviderResponse requestAction();
 
-    protected abstract boolean requestValidation(String response);
+    protected abstract boolean requestValidation(ProviderResponse response);
 
     protected abstract void requestResult(String response);
 
-    protected abstract String submitAction(GeoResult position);
+    protected abstract ProviderResponse submitAction(GeoResult position);
 
-    protected abstract boolean submitValidation(String response);
+    protected abstract boolean submitValidation(ProviderResponse response);
 
     protected abstract boolean submitResult(String response);
 
@@ -97,11 +94,11 @@ public abstract class LocationProvider {
         this.accuracy = accuracy;
     }
 
-    List<HashMap<String, String>> getCellTowers() {
+    List<Cell> getCellTowers() {
         return cellScanner.getCells();
     }
 
-    List<HashMap<String, String>> getWifiSpots() {
+    List<Wifi> getWifiSpots() {
         return wifiScanner.getSpots();
     }
 

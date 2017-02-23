@@ -57,7 +57,7 @@ public class WifiScanner {
     }
 
     /**
-     * Get Wi-Fi networks from the information from the phone and store in list
+     * Get Wifi networks from the phone-information and store in list
      *
      * @return ArrayList
      */

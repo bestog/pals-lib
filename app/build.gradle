@@ -1,38 +1,13 @@
 apply plugin: 'com.android.application'
 
-ext {
-    bintrayRepo = 'pals'
-    bintrayName = 'pals'
-
-    publishedGroupId = 'com.bestog.pals'
-    libraryName = 'PALS'
-    artifact = 'pals'
-
-    libraryDescription = ''
-
-    siteUrl = 'https://github.com/bestog/pals-lib'
-    gitUrl = 'https://github.com/bestog/pals-lib.git'
-
-    libraryVersion = '0.1'
-
-    developerId = 'bestog'
-    developerName = 'Sebastian G.'
-    developerEmail = 'android@bestog.de'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
-
 android {
-<<<<<<< Updated upstream
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "com.bestog.palssample"
         minSdkVersion 11
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -42,34 +17,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    testOptions {
-        unitTests {
-            returnDefaultValues = true
-        }
-=======
-    compileSdkVersion 25
-    buildToolsVersion "25.0.1"
-    defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 25
->>>>>>> Stashed changes
-    }
     lintOptions {
         abortOnError false
     }
 }
 
 dependencies {
-<<<<<<< Updated upstream
     compile project(':pals')
-    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.android.support:appcompat-v7:25.2.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
 }
-=======
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-}
-
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
->>>>>>> Stashed changes

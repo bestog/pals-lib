@@ -32,13 +32,13 @@ public class MainActivity extends AppCompatActivity {
         // pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "[YOUR ACCESS-TOKEN]");
 
         // Location-Provider with a fallback access-token
-        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, null);
+        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA);
 
         // Other Location-Provider
-        // pals.enableProvider(LocationProvider.PROVIDER_OPENBMAP, null);
-        // pals.enableProvider(LocationProvider.PROVIDER_OPENMAP, null);
-        // pals.enableProvider(LocationProvider.PROVIDER_GOOGLE, null);
-        // pals.enableProvider(LocationProvider.PROVIDER_OPENCELLID, null);
+        // pals.enableProvider(LocationProvider.PROVIDER_OPENBMAP);
+        // pals.enableProvider(LocationProvider.PROVIDER_OPENMAP);
+        // pals.enableProvider(LocationProvider.PROVIDER_GOOGLE);
+        // pals.enableProvider(LocationProvider.PROVIDER_OPENCELLID);
 
         process();
     }
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(GeoResult result, boolean valid) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss", Locale.GERMAN);
-                String out = String.format("Lat: %1$s\nLon: %2$s\nAcc: %3$s\n\nTime: %4$s", result.getLatitude(), result.getLongitude(), result.getAccuracy(), sdf.format(new Date()));
+                String out = String.format("Lat: %1$s\nLon: %2$s\nAcc: %3$s\n\nTime: %4$s\n\nEnabled: %5$s", result.getLatitude(), result.getLongitude(), result.getAccuracy(), sdf.format(new Date()), pals.getEnabledProviderList().toString());
                 if (results != null) {
                     results.setText(out);
                 }

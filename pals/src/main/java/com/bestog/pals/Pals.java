@@ -1,11 +1,11 @@
 package com.bestog.pals;
 
 import android.content.Context;
-import android.location.Location;
 import android.os.AsyncTask;
 
 import com.bestog.pals.interfaces.IRequest;
 import com.bestog.pals.interfaces.ISubmit;
+import com.bestog.pals.objects.GeoResult;
 import com.bestog.pals.provider.GoogleLocation;
 import com.bestog.pals.provider.LocationProvider;
 import com.bestog.pals.provider.MozillaLocation;
@@ -13,7 +13,6 @@ import com.bestog.pals.provider.OpenBMapLocation;
 import com.bestog.pals.provider.OpenCellIDLocation;
 import com.bestog.pals.provider.OpenMapLocation;
 import com.bestog.pals.utils.GPSPosition;
-import com.bestog.pals.objects.GeoResult;
 import com.bestog.pals.utils.Trilateration;
 
 import java.util.ArrayList;
@@ -31,12 +30,12 @@ public class Pals {
     private final Context context;
     private final Map<String, LocationProvider> enabledProviders = new HashMap<>();
     private String trilaterateAlg = Trilateration.ALG_SIMPLE;
-    private final Map<String, AsyncTask> taskPool = new HashMap<>();
+    // private final Map<String, AsyncTask> taskPool = new HashMap<>();
     // Request
     private final List<GeoResult> resultList = new ArrayList<>();
     private int requestPoolCount = 0;
     // Submit
-    private final List<Boolean> submitList = new ArrayList<>();
+    // private final List<Boolean> submitList = new ArrayList<>();
     private int submitPoolCount = 0;
     // Listener
     private IRequest requestListener;
@@ -52,7 +51,7 @@ public class Pals {
     }
 
     /**
-     * Enable Provider
+     * Enable provider (own token)
      *
      * @param provider String Provider-Name
      * @param token    String Access-Token
@@ -61,29 +60,41 @@ public class Pals {
         try {
             Class lp = Class.forName("com.bestog.pals.provider." + provider);
             LocationProvider locationProvider = null;
+            if (enabledProviders.containsKey(provider)) {
+                return;
+            }
             switch (provider) {
                 case LocationProvider.PROVIDER_MOZILLA:
-                    locationProvider = (token != null) ? new MozillaLocation(context, token) : new MozillaLocation(context);
+                    locationProvider = new MozillaLocation(context, token);
                     break;
                 case LocationProvider.PROVIDER_GOOGLE:
-                    locationProvider = (token != null) ? new GoogleLocation(context, token) : new GoogleLocation(context);
+                    locationProvider = new GoogleLocation(context, token);
                     break;
                 case LocationProvider.PROVIDER_OPENCELLID:
-                    locationProvider = (token != null) ? new OpenCellIDLocation(context, token) : new OpenCellIDLocation(context);
-                    break;
-                case LocationProvider.PROVIDER_OPENBMAP:
-                    locationProvider = new OpenBMapLocation(context);
+                    locationProvider = new OpenCellIDLocation(context, token);
                     break;
                 case LocationProvider.PROVIDER_OPENMAP:
                     locationProvider = new OpenMapLocation(context);
                     break;
+                case LocationProvider.PROVIDER_OPENBMAP:
+                    locationProvider = new OpenBMapLocation(context);
+                    break;
             }
-            if (locationProvider != null && lp != null && !enabledProviders.containsKey(provider)) {
+            if (locationProvider != null && lp != null) {
                 enabledProviders.put(provider, (LocationProvider) lp.cast(locationProvider));
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Enable provider (fallback-token)
+     *
+     * @param provider String Provider-Name
+     */
+    public void enableProvider(String provider) {
+        enableProvider(provider, null);
     }
 
     /**
@@ -133,7 +144,8 @@ public class Pals {
     public void request(IRequest listener) {
         this.requestListener = listener;
         for (LocationProvider lp : enabledProviders.values()) {
-            taskPool.put(lp.getTitle(), new RequestATask().execute(lp));
+            AsyncTask asyncTask = new RequestATask().execute(lp);
+            // taskPool.put(lp.getTitle(), asyncTask);
             requestPoolCount++;
         }
     }
@@ -148,10 +160,10 @@ public class Pals {
         this.submitListener = listener;
         gpsPosition.getPosition(new GPSPosition.Listener() {
             @Override
-            public void onComplete(Location geoResult, boolean valid) {
+            public void onComplete(GeoResult geoResult, boolean valid) {
                 for (LocationProvider lp : enabledProviders.values()) {
                     AsyncTask asyncTask = new SubmitATask(geoResult).execute(lp);
-                    taskPool.put(lp.getTitle(), asyncTask);
+                    // taskPool.put(lp.getTitle(), asyncTask);
                     submitPoolCount++;
                 }
             }
@@ -182,7 +194,7 @@ public class Pals {
     private void submitComplete(boolean success, boolean valid) {
         --submitPoolCount;
         if (success) {
-            submitList.add(valid);
+            // submitList.add(valid);
         }
         if (submitListener != null && submitPoolCount == 0) {
             submitListener.onComplete(valid);
@@ -229,7 +241,7 @@ public class Pals {
 
         @Override
         protected void onPostExecute(GeoResult geoResult) {
-            requestComplete(geoResult, (geoResult.getLatitude() != 0.0d && geoResult.getLongitude() != 0.0d));
+            requestComplete(geoResult, (geoResult.getLatitude() != null && geoResult.getLongitude() != null));
         }
     }
 
@@ -238,9 +250,9 @@ public class Pals {
      */
     private class SubmitATask extends AsyncTask<LocationProvider, String, Boolean> {
 
-        private final Location gpsPosition;
+        private final GeoResult gpsPosition;
 
-        public SubmitATask(Location position) {
+        SubmitATask(GeoResult position) {
             gpsPosition = position;
         }
 
