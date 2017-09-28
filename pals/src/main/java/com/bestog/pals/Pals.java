@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * Privacy Aware Location Service
- * For more information: http://bestog.github.io/pals-lib
+ * For more informations: http://bestog.github.io/pals-lib
  *
  * @author bestog
  */
@@ -109,17 +109,17 @@ public class Pals {
     }
 
     /**
-     * @return ArrayList
+     * Get enabled providers as string-list
+     *
+     * @return String[]
      */
-    public ArrayList<String> getEnabledProviderList() {
-        ArrayList<String> list = new ArrayList<>();
-        for (Map.Entry<String, LocationProvider> lp : enabledProviders.entrySet()) {
-            list.add(lp.getKey());
-        }
-        return list;
+    public String[] getEnabledProviderList() {
+        return enabledProviders.keySet().toArray(new String[enabledProviders.size()]);
     }
 
     /**
+     * Get enabled providers as map
+     *
      * @return HashMap
      */
     public Map<String, LocationProvider> getEnabledProviders() {
@@ -127,7 +127,7 @@ public class Pals {
     }
 
     /**
-     * is Provider enabled?
+     * Is provider enabled?
      *
      * @param provider Provider
      * @return boolean
@@ -171,7 +171,7 @@ public class Pals {
     }
 
     /**
-     * if requestAction complete?
+     * If requestAction complete?
      *
      * @param geoResult Coordinates and Accuracy
      * @param available valid geoResult?

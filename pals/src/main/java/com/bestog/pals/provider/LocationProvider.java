@@ -55,7 +55,7 @@ public abstract class LocationProvider {
 
     public boolean submit(GeoResult position) {
         ProviderResponse response = submitAction(position);
-        return submitValidation(response) && submitResult(response.response);
+        return submitValidation(response);
     }
 
     protected abstract ProviderResponse requestAction();
@@ -67,8 +67,6 @@ public abstract class LocationProvider {
     protected abstract ProviderResponse submitAction(GeoResult position);
 
     protected abstract boolean submitValidation(ProviderResponse response);
-
-    protected abstract boolean submitResult(String response);
 
     private double getLatitude() {
         return latitude;

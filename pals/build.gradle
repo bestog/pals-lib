@@ -9,8 +9,8 @@ ext {
     artifact = 'pals'
 
     libraryDescription = 'Privacy Aware Location Service Library for Android'
-    libraryVersion = '2.3'
-    libraryVersionCode = 203
+    libraryVersion = '2.4'
+    libraryVersionCode = 204
     siteUrl = 'https://github.com/bestog/pals-lib'
     gitUrl = 'https://github.com/bestog/pals-lib.git'
     developerId = 'bestog'
@@ -23,7 +23,7 @@ ext {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
 
     defaultConfig {
         minSdkVersion 11
@@ -38,3 +38,8 @@ android {
 
 apply from: '../jcenter-install.gradle'
 apply from: '../jcenter-bintray.gradle'
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+}

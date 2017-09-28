@@ -8,11 +8,11 @@ import android.widget.TextView;
 
 import com.bestog.pals.Pals;
 import com.bestog.pals.interfaces.IRequest;
-import com.bestog.pals.interfaces.ISubmit;
 import com.bestog.pals.objects.GeoResult;
 import com.bestog.pals.provider.LocationProvider;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -52,21 +52,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(GeoResult result, boolean valid) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy - HH:mm:ss", Locale.GERMAN);
-                String out = String.format("Lat: %1$s\nLon: %2$s\nAcc: %3$s\n\nTime: %4$s\n\nEnabled: %5$s", result.getLatitude(), result.getLongitude(), result.getAccuracy(), sdf.format(new Date()), pals.getEnabledProviderList().toString());
+                String out = String.format("Lat: %1$s\nLon: %2$s\nAcc: %3$s\n\nTime: %4$s\n\nEnabled: %5$s", result.getLatitude(), result.getLongitude(), result.getAccuracy(), sdf.format(new Date()), Arrays.toString(pals.getEnabledProviderList()));
                 if (results != null) {
                     results.setText(out);
                 }
             }
         });
-        final TextView submit = (TextView) findViewById(R.id.submit);
-        pals.submit(new ISubmit() {
-            @Override
-            public void onComplete(boolean valid) {
-                if (submit != null) {
-                    submit.setText((valid) ? "Submit success" : "Submit error");
-                }
-            }
-        });
+//        final TextView submit = (TextView) findViewById(R.id.submit);
+//        pals.submit(new ISubmit() {
+//            @Override
+//            public void onComplete(boolean valid) {
+//                if (submit != null) {
+//                    submit.setText((valid) ? "Submit success" : "Submit error");
+//                }
+//            }
+//        });
     }
 
     @Override

@@ -105,14 +105,4 @@ public class OpenMapLocation extends LocationProvider {
         return true;
     }
 
-    /**
-     * @param response String
-     * @return boolean
-     */
-    @Override
-    protected boolean submitResult(String response) {
-        // @todo
-        return true;
-    }
-
 }

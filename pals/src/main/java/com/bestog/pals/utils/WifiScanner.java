@@ -43,6 +43,8 @@ public class WifiScanner {
     }
 
     /**
+     * Is wifi enabled?
+     *
      * @return boolean
      */
     private boolean isWifiEnabled() {
@@ -57,7 +59,7 @@ public class WifiScanner {
     }
 
     /**
-     * Get Wifi networks from the phone-information and store in list
+     * Get wifi-networks from the phone-information and store in list
      *
      * @return ArrayList
      */

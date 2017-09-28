@@ -167,16 +167,4 @@ public class GoogleLocation extends LocationProvider {
         // @todo
         return true;
     }
-
-    /**
-     * get submit result
-     *
-     * @param response String
-     * @return boolean
-     */
-    @Override
-    protected boolean submitResult(String response) {
-        // @todo
-        return true;
-    }
 }

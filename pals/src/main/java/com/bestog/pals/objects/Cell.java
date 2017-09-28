@@ -7,23 +7,37 @@ package com.bestog.pals.objects;
  */
 public class Cell {
 
+    // Cell-Identification number
     public int cid;
+    // Location Area Code
     public int lac;
+    // Mobile Country Code
     public int mcc;
+    // Mobile Network Code
     public int mnc;
+    // Mobile phone signal
     public int asu;
+    // Primary scrambling code, only for UMTS
     public int psc;
+    // Decibel Milliwatt
     public int dbm;
+    // signal level
     public int lvl;
+    // Receive Signal Strength Indicator
     public int rssi;
+    // Cellular radio system
     public String rad;
+    // Registered
     public boolean reg;
 
+    /**
+     * Default constructor
+     */
     public Cell() {
     }
 
     /**
-     * Sepcific constructor
+     * Specific constructor
      *
      * @param cid int
      * @param lac int

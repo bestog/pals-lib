@@ -171,15 +171,4 @@ public class OpenBMapLocation extends LocationProvider {
 
     }
 
-    /**
-     * get submit result
-     *
-     * @param response String
-     * @return boolean
-     */
-    @Override
-    public boolean submitResult(String response) {
-        // @todo
-        return true;
-    }
 }

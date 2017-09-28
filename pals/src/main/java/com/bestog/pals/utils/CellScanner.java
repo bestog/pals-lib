@@ -2,9 +2,12 @@ package com.bestog.pals.utils;
 
 import android.os.Build;
 import android.telephony.CellIdentityGsm;
+import android.telephony.CellIdentityWcdma;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
+import android.telephony.CellInfoWcdma;
 import android.telephony.CellSignalStrengthGsm;
+import android.telephony.CellSignalStrengthWcdma;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
 
@@ -86,18 +89,34 @@ public class CellScanner {
             List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();
             for (CellInfo item : cellInfos) {
                 tmpCell = new Cell();
-                CellInfoGsm cellInfoGsm = (CellInfoGsm) item;
-                CellIdentityGsm cellIdentity = cellInfoGsm.getCellIdentity();
-                CellSignalStrengthGsm cellStrength = cellInfoGsm.getCellSignalStrength();
-                tmpCell.cid = parse(cellIdentity.getCid());
-                tmpCell.lac = parse(cellIdentity.getLac());
-                tmpCell.mnc = parse(cellIdentity.getMnc());
-                tmpCell.mcc = parse(cellIdentity.getMcc());
-                tmpCell.asu = parse(cellStrength.getAsuLevel());
-                tmpCell.dbm = parse(cellStrength.getDbm());
-                tmpCell.lvl = parse(cellStrength.getLevel());
-                tmpCell.reg = cellInfoGsm.isRegistered();
-                result.add(tmpCell);
+                if (item instanceof CellInfoGsm) {
+                    CellInfoGsm cellInfo = (CellInfoGsm) item;
+                    CellIdentityGsm cellIdentity = cellInfo.getCellIdentity();
+                    CellSignalStrengthGsm cellSignalStrength = cellInfo.getCellSignalStrength();
+                    tmpCell.cid = parse(cellIdentity.getCid());
+                    tmpCell.lac = parse(cellIdentity.getLac());
+                    tmpCell.mnc = parse(cellIdentity.getMnc());
+                    tmpCell.mcc = parse(cellIdentity.getMcc());
+                    tmpCell.asu = parse(cellSignalStrength.getAsuLevel());
+                    tmpCell.dbm = parse(cellSignalStrength.getDbm());
+                    tmpCell.lvl = parse(cellSignalStrength.getLevel());
+                    tmpCell.reg = cellInfo.isRegistered();
+                    result.add(tmpCell);
+                }
+                if (item instanceof CellInfoWcdma && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    CellInfoWcdma cellInfo = (CellInfoWcdma) item;
+                    CellIdentityWcdma cellIdentity = cellInfo.getCellIdentity();
+                    CellSignalStrengthWcdma cellSignalStrength = cellInfo.getCellSignalStrength();
+                    tmpCell.cid = parse(cellIdentity.getCid());
+                    tmpCell.lac = parse(cellIdentity.getLac());
+                    tmpCell.mnc = parse(cellIdentity.getMnc());
+                    tmpCell.mcc = parse(cellIdentity.getMcc());
+                    tmpCell.asu = parse(cellSignalStrength.getAsuLevel());
+                    tmpCell.dbm = parse(cellSignalStrength.getDbm());
+                    tmpCell.lvl = parse(cellSignalStrength.getLevel());
+                    tmpCell.reg = cellInfo.isRegistered();
+                    result.add(tmpCell);
+                }
             }
         }
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {

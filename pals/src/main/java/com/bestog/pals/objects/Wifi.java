@@ -7,18 +7,18 @@ package com.bestog.pals.objects;
  */
 public class Wifi {
 
+    // Mac-address / bssid
     public String mac;
+    // Channel
     public int channel;
+    // Frequence
     public int freq;
+    // Signal strength
     public int signal;
 
+    /**
+     * Default constructor
+     */
     public Wifi() {
-    }
-
-    public Wifi(String mac, int channel, int freq, int signal) {
-        this.mac = mac;
-        this.channel = channel;
-        this.freq = freq;
-        this.signal = signal;
     }
 }

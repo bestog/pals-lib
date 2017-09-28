@@ -10,9 +10,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PalsUnitTest {
@@ -23,28 +23,34 @@ public class PalsUnitTest {
     @Test
     public void testEnabledAndDisabledProviders() {
         Pals pals = new Pals(mMockContext);
-        String result = pals.getEnabledProviderList().toString();
-        assertThat(result, is("[]"));
-        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, null);
-        pals.enableProvider(LocationProvider.PROVIDER_OPENCELLID, null);
-        assertThat(pals.getEnabledProviderList().toString(), is("[OpenCellIDLocation, MozillaLocation]"));
+        assertThat(pals.getEnabledProviderList().length, is(0));
+        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA);
+        pals.enableProvider(LocationProvider.PROVIDER_OPENCELLID, "123456789");
+        assertThat(pals.getEnabledProviderList().length, is(2));
         pals.disableProvider(LocationProvider.PROVIDER_MOZILLA);
-        assertThat(pals.getEnabledProviderList().toString(), is("[OpenCellIDLocation]"));
+        assertThat(pals.getEnabledProviderList().length, is(1));
+    }
+
+    @Test
+    public void testIsDefaultProviderEnabled() {
+        Pals pals = new Pals(mMockContext);
+        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA);
+        assertTrue(pals.isProviderEnabled(LocationProvider.PROVIDER_MOZILLA));
     }
 
     @Test
     public void testIsProviderEnabled() {
         Pals pals = new Pals(mMockContext);
-        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, null);
+        pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "123456789");
         assertTrue(pals.isProviderEnabled(LocationProvider.PROVIDER_MOZILLA));
     }
 
     @Test
-    public void testOwnTokenForLocationProvider() {
+    public void testNameFromLocationProvider() {
         Pals pals = new Pals(mMockContext);
         pals.enableProvider(LocationProvider.PROVIDER_MOZILLA, "01234567890123456789");
         LocationProvider lp = pals.getEnabledProviders().get(LocationProvider.PROVIDER_MOZILLA);
-        //assertThat(lp.getOwnToken(), is("01234567890123456789"));
+        assertThat(lp.getTitle(), is(LocationProvider.PROVIDER_MOZILLA));
     }
 
     @Test

@@ -26,6 +26,7 @@ public class OpenCellIDLocation extends LocationProvider {
     private final String _apiUrl = "http://www.opencellid.org/cell/get?key=";
     private final String _apiToken = "a5fceaa4-afc5-4647-896f-c0794c8b3122";
     private final String _requestUrl;
+    private final String _submitUrl = "http://www.opencellid.org/measure/uploadJson";
 
     /**
      * Constructor
@@ -131,18 +132,6 @@ public class OpenCellIDLocation extends LocationProvider {
      */
     @Override
     public boolean submitValidation(ProviderResponse response) {
-        // @todo
-        return true;
-    }
-
-    /**
-     * get submit result
-     *
-     * @param response String
-     * @return boolean
-     */
-    @Override
-    protected boolean submitResult(String response) {
         // @todo
         return true;
     }
